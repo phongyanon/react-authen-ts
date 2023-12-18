@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom"
-import { AppShell, Burger, Group, Skeleton, Text } from '@mantine/core';
+import { AppShell, Burger, Group, Skeleton, Center } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { MantineLogo } from '@mantinex/mantine-logo';
+import { Navbar } from "../navbar/Navbar";
+import { Header } from "../header/Header";
 
 export function MainLayout() {
 	const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
@@ -10,7 +11,6 @@ export function MainLayout() {
   return (
     <AppShell
       header={{ height: 60 }}
-			footer={{ height: 60 }}
       navbar={{
         width: 300,
         breakpoint: 'sm',
@@ -22,21 +22,15 @@ export function MainLayout() {
         <Group h="100%" px="md">
           <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
           <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
-          <MantineLogo size={30} />
+          <Header />
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">
-        Navbar
-        {Array(15)
-          .fill(0)
-          .map((_, index) => (
-            <Skeleton key={index} h={28} mt="sm" animate={false} />
-          ))}
+      <AppShell.Navbar>
+        <Navbar/>
       </AppShell.Navbar>
       <AppShell.Main>
 				<Outlet/>
 			</AppShell.Main>
-			<AppShell.Footer p="md">Footer</AppShell.Footer>
     </AppShell>
   );
 }
