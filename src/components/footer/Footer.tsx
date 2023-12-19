@@ -1,4 +1,4 @@
-import { AppShell, Burger, Group, Skeleton, Text } from '@mantine/core';
+import { AppShell} from '@mantine/core';
 
 export function Footer() {
   return (

@@ -1,24 +1,54 @@
-import { Avatar, Menu, Group, Flex, Text } from '@mantine/core';
-import { ActionIcon, useMantineColorScheme, useComputedColorScheme } from '@mantine/core';
-import { IconSun, IconMoon, IconUserCircle, IconEdit, IconSettings, IconLogout } from '@tabler/icons-react';
+import { 
+  Avatar,
+  Menu, 
+  Group, 
+  Flex, 
+  Text, 
+  Indicator, 
+  ActionIcon, 
+  useMantineColorScheme, 
+  useComputedColorScheme, 
+  UnstyledButton,
+  em
+} from '@mantine/core';
+import { 
+  IconSun, 
+  IconMoon, 
+  IconUser, 
+  IconEdit, 
+  IconSettings, 
+  IconLogout, 
+  IconBell 
+} from '@tabler/icons-react';
+import { useMediaQuery } from '@mantine/hooks';
 
 export function Header() {
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
+  const isMobileS = useMediaQuery(`(max-width: ${em(320)})`);
 
   return (
     <Group justify="flex-end">
       <ActionIcon
           onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
           variant="default"
-          size="lg"
+          size={isMobileS ? "xs": "lg"}
           aria-label="Toggle color scheme"
         >
-          {computedColorScheme === 'light' ? <IconMoon stroke={1.5} /> : <IconSun stroke={1.5} />}
+          {computedColorScheme === 'light' ? <IconMoon stroke={1.5} size={20} /> : <IconSun stroke={1.5} size={20} />}
       </ActionIcon>
+
+      <ActionIcon variant="default" color="gray" aria-label="Settings" size={isMobileS ? "xs": "lg"}>
+        <Indicator inline label="5" size={18}>
+          <IconBell stroke={1.5} size={20} />
+        </Indicator>
+      </ActionIcon>
+
       <Menu shadow="md" width={200}>
         <Menu.Target>
-          <Avatar color="cyan" radius="xl">US</Avatar>
+          <UnstyledButton>
+            <Avatar color="cyan" radius="xl">US</Avatar>
+          </UnstyledButton>
         </Menu.Target>
         <Menu.Dropdown>
           <Group>
@@ -37,7 +67,7 @@ export function Header() {
             </Flex>
           </Group>
           <Menu.Divider />
-          <Menu.Item leftSection={<IconUserCircle size={15}/>}>
+          <Menu.Item leftSection={<IconUser size={15}/>}>
             View profile
           </Menu.Item>
           <Menu.Item leftSection={<IconEdit size={15}/>}>
