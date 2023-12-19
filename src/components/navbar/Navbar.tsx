@@ -17,7 +17,7 @@ const nav_links = [
   { label: 'Profile', leftSection: <IconClipboardText size="1rem" stroke={1.5} /> },
   { label: 'Verification', leftSection: <IconClipboardCheck size="1rem" stroke={1.5} /> },
   { label: 'Token', leftSection: <IconKey size="1rem" stroke={1.5} /> },
-  { text: 'Setting'},
+  { text: 'Config'},
   { label: 'Setting', leftSection: <IconSettings size="1rem" stroke={1.5} /> },
   { label: 'Theme', leftSection: <IconPalette size="1rem" stroke={1.5} /> },
   { text: 'Support'},
@@ -31,7 +31,7 @@ export function Navbar() {
   const nav_items = nav_links.map((item, index) => {
     if (item.hasOwnProperty('text')) {
       return(
-        <Text size="xs" p="xs" c="dimmed">{item.text}</Text>
+        <Text size="xs" p="xs" c="dimmed" key={item.text}>{item.text}</Text>
       )
     } else {
       return (

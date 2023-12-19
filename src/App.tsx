@@ -9,16 +9,16 @@ import { QueryClientProvider, QueryClient } from "react-query"
 const client = new QueryClient()
 
 const App = () => {
-    return (
-        <MantineProvider
-          // theme={theme}
-        >
-            <QueryClientProvider client={client}>
-                <Notifications position="top-right" zIndex={999} />
-                <RouterProvider router={router} />
-            </QueryClientProvider>
-        </MantineProvider>
-    )
+  return (
+    <MantineProvider
+      // theme={theme}
+    >
+      <QueryClientProvider client={client}>
+        <Notifications position="top-right" zIndex={999} />
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </MantineProvider>
+  )
 }
 
 export default App
