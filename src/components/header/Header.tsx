@@ -32,17 +32,53 @@ export function Header() {
       <ActionIcon
           onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
           variant="default"
+          radius="md"
           size={isMobileS ? "xs": "lg"}
           aria-label="Toggle color scheme"
         >
           {computedColorScheme === 'light' ? <IconMoon stroke={1.5} size={20} /> : <IconSun stroke={1.5} size={20} />}
       </ActionIcon>
 
-      <ActionIcon variant="default" color="gray" aria-label="Settings" size={isMobileS ? "xs": "lg"}>
-        <Indicator inline label="5" size={18}>
-          <IconBell stroke={1.5} size={20} />
-        </Indicator>
-      </ActionIcon>
+      <Menu shadow="md" width={360}>
+        <Menu.Target>
+          <ActionIcon variant="default" color="gray" aria-label="Settings" radius="md" size={isMobileS ? "xs": "lg"}>
+            <Indicator inline label="5" size={18}>
+              <IconBell stroke={1.5} size={20} />
+            </Indicator>
+          </ActionIcon>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Label>Notification</Menu.Label>
+          <Menu.Divider />
+          <Menu.Item h={54} leftSection={
+            <Avatar variant="light" radius="xl" color="orange" src="">
+              <IconSun size={15}/>
+            </Avatar>
+          }>
+            <Text size="sm" >5:00 AM, It's my birth day</Text>
+            <Text size="xs" c="dimmed">2 min ago</Text>
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item h={54} leftSection={
+            <Avatar variant="light" radius="xl" color="teal" src="">
+              <IconEdit size={15}/>
+            </Avatar>
+          }>
+            <Text size="sm" >6:00 PM, Warning for matainance</Text>
+            <Text size="xs" c="dimmed">5 Feb</Text>
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item h={54} leftSection={
+            <Avatar variant="light" radius="xl" color="blue" src="">
+              <IconUser size={15}/>          
+            </Avatar>
+          }>
+            <Text size="sm" >9:30 AM, Adam says "Hi there" to you...</Text>
+            <Text size="xs" c="dimmed">8 hours ago</Text>
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+      
 
       <Menu shadow="md" width={200}>
         <Menu.Target>

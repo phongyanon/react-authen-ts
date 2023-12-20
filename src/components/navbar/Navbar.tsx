@@ -5,7 +5,8 @@ import {
   IconClipboardCheck,
   IconKey,
   IconSettings,
-  IconPalette,
+  IconHome,
+  // IconPalette,
   IconBook,
   IconMail
 } from '@tabler/icons-react';
@@ -13,16 +14,17 @@ import { Box, NavLink, Text } from '@mantine/core';
 
 const nav_links = [
   { text: 'Navigation'},
-  { label: 'User', leftSection: <IconUser size="1rem" stroke={1.5} /> },
-  { label: 'Profile', leftSection: <IconClipboardText size="1rem" stroke={1.5} /> },
-  { label: 'Verification', leftSection: <IconClipboardCheck size="1rem" stroke={1.5} /> },
-  { label: 'Token', leftSection: <IconKey size="1rem" stroke={1.5} /> },
+  { label: 'Overview', leftSection: <IconHome size="1rem" stroke={1.5} />, path: "/" },
+  { label: 'User', leftSection: <IconUser size="1rem" stroke={1.5} />, path: "/users" },
+  { label: 'Profile', leftSection: <IconClipboardText size="1rem" stroke={1.5} />, path: "/profiles" },
+  { label: 'Verification', leftSection: <IconClipboardCheck size="1rem" stroke={1.5} />, path: "/verifications" },
+  { label: 'Token', leftSection: <IconKey size="1rem" stroke={1.5} />, path: "/tokens"},
   { text: 'Config'},
-  { label: 'Setting', leftSection: <IconSettings size="1rem" stroke={1.5} /> },
-  { label: 'Theme', leftSection: <IconPalette size="1rem" stroke={1.5} /> },
+  { label: 'Setting', leftSection: <IconSettings size="1rem" stroke={1.5} />, path: "/setting" },
+  // { label: 'Theme', leftSection: <IconPalette size="1rem" stroke={1.5} />, path: "/theme" },
   { text: 'Support'},
-  { label: 'Document', leftSection: <IconBook size="1rem" stroke={1.5} /> },
-  { label: 'Contact', leftSection: <IconMail size="1rem" stroke={1.5} /> },
+  { label: 'Document', leftSection: <IconBook size="1rem" stroke={1.5} />, path: "/document" },
+  { label: 'Contact', leftSection: <IconMail size="1rem" stroke={1.5} />, path: "/contact" },
 ];
 
 export function Navbar() {
@@ -36,7 +38,7 @@ export function Navbar() {
     } else {
       return (
         <NavLink
-          href="#required-for-focus"
+          href={item.path}
           key={item.label}
           active={index === active}
           label={item.label}
