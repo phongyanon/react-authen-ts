@@ -25,7 +25,8 @@ import { useMediaQuery } from '@mantine/hooks';
 export function Header() {
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
-  const isMobileS = useMediaQuery(`(max-width: ${em(320)})`);
+  const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
+  const isMobileL = useMediaQuery(`(max-width: ${em(500)})`);
 
   return (
     <Group justify="flex-end">
@@ -82,8 +83,9 @@ export function Header() {
 
       <Menu shadow="md" width={200}>
         <Menu.Target>
-          <UnstyledButton>
+          <UnstyledButton style={{display: "flex", alignItems: "center"}}>
             <Avatar color="cyan" radius="xl">US</Avatar>
+            {isMobileL ? <></>: <Text ml={16}>Username</Text>}
           </UnstyledButton>
         </Menu.Target>
         <Menu.Dropdown>
