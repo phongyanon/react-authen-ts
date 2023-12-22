@@ -11,9 +11,11 @@ import {
   Breadcrumbs, 
   Anchor,
   Tooltip,
-  // em,
+  Checkbox,
   Grid,
-  TextInput
+  TextInput,
+  Popover,
+  Pagination
 } from '@mantine/core';
 import { 
   IconEdit, 
@@ -70,6 +72,7 @@ const Users: React.FC = () =>{
   const [anchor, setAnchor] = useState<IUserAnchor[]>([{ title: 'Users', href: '#' }, { title: 'username', href: '#' }]);
   // const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
   const isTablet = useMediaQuery(`(max-width: ${rem(790)})`);
+  const [filterOpened, setFilterOpened] = useState(false);
 
   return (
     <>
@@ -112,9 +115,34 @@ const Users: React.FC = () =>{
             </ActionIcon>
           }
           rightSection={
-            <ActionIcon size={36} color="gray" variant="subtle">
-              <IconAdjustments radius="md" style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-            </ActionIcon>
+            <Popover opened={filterOpened} onChange={setFilterOpened} position="bottom-end" width={240}>
+              <Popover.Target>
+                <ActionIcon size={36} color="gray" variant="subtle" onClick={() => setFilterOpened((o) => !o)}>
+                  <IconAdjustments radius="md" style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+                </ActionIcon>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <Text size="sm" c="dimmed">Gender</Text>
+                <Group p={12}>
+                  <Checkbox label="Male"/>
+                  <Checkbox label="Female"/>
+                  <Checkbox label="Others"/>
+                </Group>
+                <Text size="sm" c="dimmed">Verified</Text>
+                <Group p={12}>
+                  <Checkbox label="Email"/>
+                  <Checkbox label="OTP"/>
+                </Group>
+                <Text size="sm" c="dimmed">Status</Text>
+                <Group p={12}>
+                  <Checkbox label="Active"/>
+                  <Checkbox label="Inactive"/>
+                </Group>
+                <Group p={12} grow>
+                  <Button variant="filled" color="yellow" onClick={() => setFilterOpened((o) => !o)}>Done</Button>
+                </Group>
+              </Popover.Dropdown>
+            </Popover>
           }
         />
         <Button 
@@ -185,7 +213,9 @@ const Users: React.FC = () =>{
           ))
         }
       </Grid >
-        
+      <Group justify="center" pt={36}>
+        <Pagination total={10} />
+      </Group>
     </>
     
   );
