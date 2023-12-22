@@ -10,14 +10,21 @@ import {
   rem, 
   Breadcrumbs, 
   Anchor,
-  Paper,
-  em,
-  SimpleGrid 
+  Tooltip,
+  // em,
+  Grid,
+  TextInput
 } from '@mantine/core';
 import { 
   IconEdit, 
   IconTrash,
-  IconDots
+  IconDots,
+  IconList,
+  IconTable,
+  IconLayoutGrid,
+  IconCirclePlus,
+  IconSearch,
+  IconAdjustments
 } from '@tabler/icons-react';
 import { useMediaQuery } from '@mantine/hooks';
 
@@ -61,72 +68,124 @@ const mockUsers = [
 
 const Users: React.FC = () =>{
   const [anchor, setAnchor] = useState<IUserAnchor[]>([{ title: 'Users', href: '#' }, { title: 'username', href: '#' }]);
-  const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
-  const isTablet = useMediaQuery(`(max-width: ${em(768)})`);
+  // const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
+  const isTablet = useMediaQuery(`(max-width: ${rem(790)})`);
 
   return (
     <>
-      <Breadcrumbs>
-        {
-          anchor.map((item, index) => (
-            <Anchor href={item.href} key={index}>
-              {item.title}
-            </Anchor>
-            ))
-        }
-      </Breadcrumbs>
-      <Paper shadow="md" withBorder p={isMobileS ? "0" : "sm"} mt="lg">
-        <SimpleGrid cols={isTablet ? 1 : 4}>
+      <Group justify="space-between" p={6}>
+        <Breadcrumbs>
           {
-            mockUsers.map((item, index) => (
-              <Card shadow="sm" padding="lg" radius="md" withBorder w={280} key={index}>
-
-                <Group justify="flex-end">
-                  <Menu withinPortal position="bottom-end" shadow="sm" width={120}>
-                    <Menu.Target>
-                      <ActionIcon variant="subtle" color="gray">
-                        <IconDots style={{ width: rem(16), height: rem(16) }} />
-                      </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      <Menu.Item
-                        leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
-                      >
-                        Edit
-                      </Menu.Item>
-                      <Menu.Item
-                        leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
-                        color="red"
-                      >
-                        Delete
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
-                  </Group>
-      
-                <Avatar
-                  src={item.image_profile}
-                  size={120}
-                  radius={120}
-                  mx="auto"
-                />
-                <Text ta="center" fz="lg" fw={500} mt="md">
-                  {item.first_name_EN} {item.last_name_EN}
-                </Text>
-                <Text ta="center" c="dimmed" fz="sm">
-                  {item.email}
-                </Text>
-      
-                <Button variant="default" ml={0} mr={0} mt="md">
-                  View
-                </Button>
-      
-              </Card>   
-            ))
+            anchor.map((item, index) => (
+              <Anchor href={item.href} key={index}>
+                {item.title}
+              </Anchor>
+              ))
           }
-        </SimpleGrid >
+        </Breadcrumbs>
+        <Group justify={isTablet? "flex-end": "center"}>
+        <Group gap="0">
+          <Tooltip label="List" openDelay={500}>
+            <ActionIcon variant="subtle" color="gray" aria-label="Settings">
+              <IconList style={{ width: '70%', height: '70%' }} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Card" openDelay={500}>
+            <ActionIcon variant="subtle" color="gray" aria-label="Settings">
+              <IconLayoutGrid style={{ width: '70%', height: '70%' }} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Table" openDelay={500}>
+            <ActionIcon variant="subtle" color="gray" aria-label="Settings">
+              <IconTable style={{ width: '70%', height: '70%' }} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+        <TextInput
+          size="sm"
+          w="240"
+          placeholder=" Search..."
+          rightSectionWidth={34}
+          leftSection={
+            <ActionIcon size={36} color="gray" variant="subtle">
+              <IconSearch radius="md" style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+            </ActionIcon>
+          }
+          rightSection={
+            <ActionIcon size={36} color="gray" variant="subtle">
+              <IconAdjustments radius="md" style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+            </ActionIcon>
+          }
+        />
+        <Button 
+          size="sm"
+          variant="filled" 
+          color="yellow" 
+          radius="md"
+          leftSection={<IconCirclePlus size={20}/>}
+        >
+          Add
+        </Button>
+      </Group>
+      </Group>
+      <Group justify="space-between" p={6} mb={12}>
         
-      </Paper>
+        
+      </Group>
+
+      <Grid justify="flex-start">
+        {
+          mockUsers.map((item, index) => (
+            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+            <Group justify="center">
+            <Card shadow="sm" padding="lg" radius="md" withBorder w={280} key={index}>
+              <Group justify="flex-end">
+                <Menu withinPortal position="bottom-end" shadow="sm" width={120}>
+                  <Menu.Target>
+                    <ActionIcon variant="subtle" color="gray">
+                      <IconDots style={{ width: rem(16), height: rem(16) }} />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item
+                      leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
+                    >
+                      Edit
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
+                      color="red"
+                    >
+                      Delete
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+                </Group>
+    
+              <Avatar
+                src={item.image_profile}
+                size={120}
+                radius={120}
+                mx="auto"
+              />
+              <Text ta="center" fz="lg" fw={500} mt="md">
+                {item.first_name_EN} {item.last_name_EN}
+              </Text>
+              <Text ta="center" c="dimmed" fz="sm">
+                {item.email}
+              </Text>
+    
+              <Button variant="default" ml={0} mr={0} mt="md">
+                View
+              </Button>
+    
+            </Card>
+            </Group>
+            </Grid.Col>
+          ))
+        }
+      </Grid >
+        
     </>
     
   );
