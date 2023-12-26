@@ -34,11 +34,7 @@ import {
 } from '@tabler/icons-react';
 import { useMediaQuery, useDisclosure } from '@mantine/hooks';
 import DeleteUserModal from './components/DeleteUserModal';
-
-interface IUserAnchor {
-  title: string
-  href: string
-}
+import { useNavigate } from "react-router-dom";
 
 const mockUsers = [
   {
@@ -94,13 +90,14 @@ const mockUsers = [
 ]
 
 const Users: React.FC = () =>{
-  const [anchor, setAnchor] = useState<IUserAnchor[]>([{ title: 'Users', href: '#' }, { title: 'username', href: '#' }]);
+  const anchor = [{ title: 'Users', href: '/users' }];
   // const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
   const isTablet = useMediaQuery(`(max-width: ${rem(790)})`);
   const [filterOpened, setFilterOpened] = useState(false);
   const [viewMode, setViewMode] = useState<string>('card'); // card or table
   const [delUserOpened, delUserHandlers] = useDisclosure(false);
   const [delUserId, setDelUserId] = useState<string>('');
+  const navigate = useNavigate();
   const rows = mockUsers.map((item) => (
     <Table.Tr key={`table-${item.id}`}>
       <Table.Td>
@@ -135,7 +132,7 @@ const Users: React.FC = () =>{
           <ActionIcon variant="subtle" color="gray">
             <IconEye style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon variant="subtle" color="gray">
+          <ActionIcon variant="subtle" color="gray" onClick={() => navigate(`/users/${item.id}/edit`)}>
             <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
           <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteUser(item.id)}>
@@ -228,6 +225,8 @@ const Users: React.FC = () =>{
           color="yellow" 
           radius="md"
           leftSection={<IconCirclePlus size={20}/>}
+          component='a'
+          href="/users/new"
         >
           Add
         </Button>
@@ -235,7 +234,7 @@ const Users: React.FC = () =>{
       </Group>
 
       {viewMode === 'card' ? 
-      <Grid justify="flex-start">
+      <Grid justify="flex-start" mt={16}>
         {
           mockUsers.map((item, index) => (
             <Grid.Col span={{ base: 12, md: 6, lg: 3 }} key={index}>
@@ -251,6 +250,7 @@ const Users: React.FC = () =>{
                   <Menu.Dropdown>
                     <Menu.Item
                       leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
+                      onClick={() => navigate(`/users/${item.id}/edit`)}
                     >
                       Edit
                     </Menu.Item>
@@ -289,7 +289,7 @@ const Users: React.FC = () =>{
         }
       </Grid >
       : 
-      <Table.ScrollContainer minWidth={500}>
+      <Table.ScrollContainer minWidth={500} mt={16}>
         <Table verticalSpacing="sm" stickyHeader>
           <Table.Thead>
             <Table.Tr>
