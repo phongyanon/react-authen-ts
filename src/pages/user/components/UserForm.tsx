@@ -1,7 +1,22 @@
-import { Paper, TextInput, Box, PasswordInput, Group, Title, Center, Button, Breadcrumbs, Anchor } from '@mantine/core';
+import { 
+	Paper, 
+	TextInput, 
+	Box, 
+	PasswordInput, 
+	Group, 
+	Title, 
+	Center, 
+	Button, 
+	Breadcrumbs, 
+	Anchor 
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { anchorState } from '../../../store/user';
 
 const UserForm: React.FC = () => {
+	const navigate = useNavigate();
   const form = useForm({
     initialValues: {
       username: '',
@@ -17,10 +32,7 @@ const UserForm: React.FC = () => {
 			),
     },
   });
-	const anchor = [
-		{ title: 'Users', href: '/users' },
-		{ title: 'New', href: '/users/new' },
-	]
+	const [anchor, setAnchor] = useRecoilState(anchorState);
 
 	return (
 		<>
@@ -28,7 +40,10 @@ const UserForm: React.FC = () => {
 			<Breadcrumbs>
 				{
 					anchor.map((item, index) => (
-						<Anchor href={item.href} key={index}>
+						<Anchor key={index} onClick={() => {
+							setAnchor(anchor.slice(0, index+1))
+							navigate(item.href)
+						}}>
 							{item.title}
 						</Anchor>
 						))
@@ -48,7 +63,10 @@ const UserForm: React.FC = () => {
 						<Button type="submit">
 							Add user
 						</Button>
-						<Button variant="outline" component="a" href="/users">
+						<Button variant="outline" onClick={() => {
+							setAnchor([{title: 'User', href: '/users'}])
+							navigate("/users")
+						}}>
 							Cancel
 						</Button>
 					</Group>

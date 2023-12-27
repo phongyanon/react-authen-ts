@@ -35,6 +35,8 @@ import {
 import { useMediaQuery, useDisclosure } from '@mantine/hooks';
 import DeleteUserModal from './components/DeleteUserModal';
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from 'recoil';
+import { anchorState } from '../../store/user';
 
 const mockUsers = [
   {
@@ -42,6 +44,7 @@ const mockUsers = [
     image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png",
     first_name_EN: "Jane",
     last_name_EN: "Fingerlicker",
+    username: "Fingerlicker",
     email: "jfingerlicker@me.io",
     phone: "+6699 9995555",
     role: 'user',
@@ -52,6 +55,7 @@ const mockUsers = [
     image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-7.png",
     first_name_EN: "Pink",
     last_name_EN: "Hotlicker",
+    username: "Hotlicker",
     email: "Hotlicker@email.com",
     phone: "+6693 9991111",
     role: 'user',
@@ -62,6 +66,7 @@ const mockUsers = [
     image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-6.png",
     first_name_EN: "Elsa",
     last_name_EN: "Alivelicker",
+    username: "Alivelicker",
     email: "Alivelicker@email.com",
     phone: "+6693 9992345",
     role: 'user',
@@ -72,6 +77,7 @@ const mockUsers = [
     image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png",
     first_name_EN: "Blone",
     last_name_EN: "Shortlicker",
+    username: "Shortlicker",
     email: "Shortlicker@email.com",
     phone: "+6692 2222345",
     role: 'user',
@@ -82,6 +88,7 @@ const mockUsers = [
     image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-4.png",
     first_name_EN: "Sita",
     last_name_EN: "Shortlicker",
+    username: "SitaShort",
     email: "STShortlicker@email.com",
     phone: "+6682 9002345",
     role: 'admin',
@@ -90,7 +97,7 @@ const mockUsers = [
 ]
 
 const Users: React.FC = () =>{
-  const anchor = [{ title: 'Users', href: '/users' }];
+  const [anchor, setAchor] = useRecoilState(anchorState);
   // const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
   const isTablet = useMediaQuery(`(max-width: ${rem(790)})`);
   const [filterOpened, setFilterOpened] = useState(false);
@@ -98,23 +105,19 @@ const Users: React.FC = () =>{
   const [delUserOpened, delUserHandlers] = useDisclosure(false);
   const [delUserId, setDelUserId] = useState<string>('');
   const navigate = useNavigate();
+
   const rows = mockUsers.map((item) => (
     <Table.Tr key={`table-${item.id}`}>
       <Table.Td>
         <Group gap="sm">
           <Avatar size={40} src={item.image_profile} radius={40} />
-          <div>
-            <Text fz="sm" fw={500}>
-              {item.first_name_EN + ' ' + item.last_name_EN}
-            </Text>
-            <Text fz="xs" c="dimmed">
-              {item.email}
-            </Text>
-          </div>
+          <Text fz="sm" fw={500}>
+            {item.username}
+          </Text>
         </Group>
       </Table.Td>
 
-      <Table.Td>{item.phone}</Table.Td>
+      <Table.Td>{item.email}</Table.Td>
       <Table.Td>{item.role}</Table.Td>
       <Table.Td width={150}>
         {item.status === 'active' ? (
@@ -129,10 +132,18 @@ const Users: React.FC = () =>{
       </Table.Td>
       <Table.Td>
         <Group gap={0} justify="center">
-          <ActionIcon variant="subtle" color="gray" onClick={() => navigate(`/users/${item.id}`)}>
+          <ActionIcon variant="subtle" color="gray" onClick={() => {
+            setAchor([...anchor, {title: item.username, href: '#'}])
+            navigate(`/users/${item.id}`)
+          }}
+          >
             <IconEye style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon variant="subtle" color="gray" onClick={() => navigate(`/users/${item.id}/edit`)}>
+          <ActionIcon variant="subtle" color="gray" onClick={() => {
+            setAchor([...anchor, {title: 'edit', href: '#'}])
+            navigate(`/users/${item.id}/edit`)
+          }}
+          >
             <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
           <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteUser(item.id)}>
@@ -154,7 +165,7 @@ const Users: React.FC = () =>{
         <Breadcrumbs>
           {
             anchor.map((item, index) => (
-              <Anchor href={item.href} key={index}>
+              <Anchor key={index} onClick={() => navigate(item.href)}>
                 {item.title}
               </Anchor>
               ))
@@ -225,8 +236,10 @@ const Users: React.FC = () =>{
           color="yellow" 
           radius="md"
           leftSection={<IconCirclePlus size={20}/>}
-          component='a'
-          href="/users/new"
+          onClick={() => {
+            setAchor([...anchor, {title: 'new', href: '#'}]);
+            navigate("/users/new");
+          }}
         >
           Add
         </Button>
@@ -250,7 +263,10 @@ const Users: React.FC = () =>{
                   <Menu.Dropdown>
                     <Menu.Item
                       leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
-                      onClick={() => navigate(`/users/${item.id}/edit`)}
+                      onClick={() => {
+                        setAchor([...anchor, {title: 'edit', href: '#'}]);
+                        navigate(`/users/${item.id}/edit`)
+                      }}
                     >
                       Edit
                     </Menu.Item>
@@ -272,13 +288,17 @@ const Users: React.FC = () =>{
                 mx="auto"
               />
               <Text ta="center" fz="lg" fw={500} mt="md">
-                {item.first_name_EN} {item.last_name_EN}
+                {item.username}
               </Text>
               <Text ta="center" c="dimmed" fz="sm">
                 {item.email}
               </Text>
     
-              <Button variant="default" ml={0} mr={0} mt="md" onClick={() => navigate(`/users/${item.id}`)}>
+              <Button variant="default" ml={0} mr={0} mt="md" onClick={() => {
+                setAchor([...anchor, {title: item.username, href: '#'}])
+                navigate(`/users/${item.id}`)
+                }}
+              >
                 View
               </Button>
     
@@ -294,7 +314,7 @@ const Users: React.FC = () =>{
           <Table.Thead>
             <Table.Tr>
               <Table.Th>User</Table.Th>
-              <Table.Th>Phone</Table.Th>
+              <Table.Th>Email</Table.Th>
               <Table.Th>Role</Table.Th>
               <Table.Th ta={"center"}>Status</Table.Th>
             </Table.Tr>

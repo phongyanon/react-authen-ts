@@ -10,12 +10,13 @@ import {
 	Anchor,
 	Table
 } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { anchorState } from '../../../store/user';
 
 const UserView: React.FC = () => {
-	const anchor = [
-		{ title: 'Users', href: '/users' },
-		{ title: 'user_123', href: '/users/user_id' },
-	]
+	const [anchor, setAnchor] = useRecoilState(anchorState);
+	const navigate = useNavigate();
 
 	return (
 		<>
@@ -23,7 +24,10 @@ const UserView: React.FC = () => {
 			<Breadcrumbs>
 				{
 					anchor.map((item, index) => (
-						<Anchor href={item.href} key={index}>
+						<Anchor key={index} onClick={() => {
+							setAnchor(anchor.slice(0, index+1))
+							navigate(item.href)
+						}}>
 							{item.title}
 						</Anchor>
 						))
@@ -60,7 +64,10 @@ const UserView: React.FC = () => {
 					</Table.Tbody>
 				</Table>
 				<Group justify="center" mt="xl">
-					<Button variant="outline" component="a" href="/users">
+						<Button variant="outline" onClick={() => {
+							setAnchor([{title: 'User', href: '/users'}])
+							navigate("/users")
+						}}>
 						Back
 					</Button>
 				</Group>

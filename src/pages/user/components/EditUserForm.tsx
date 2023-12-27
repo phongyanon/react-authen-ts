@@ -15,9 +15,14 @@ import {
 	Text
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { anchorState } from '../../../store/user';
 
 const EditUserForm: React.FC = () => {
 	const [userStatus, setUserStatus] = useState(true);
+	const [anchor, setAnchor] = useRecoilState(anchorState);
+	const navigate = useNavigate();
   const form = useForm({
     initialValues: {
       username: 'test',
@@ -35,10 +40,6 @@ const EditUserForm: React.FC = () => {
 			)
     },
   });
-	const anchor = [
-		{ title: 'Users', href: '/users' },
-		{ title: 'Edit', href: '/users/edit' },
-	]
 
 	return (
 		<>
@@ -46,7 +47,10 @@ const EditUserForm: React.FC = () => {
 			<Breadcrumbs>
 				{
 					anchor.map((item, index) => (
-						<Anchor href={item.href} key={index}>
+						<Anchor key={index} onClick={() => {
+							setAnchor(anchor.slice(0, index+1))
+							navigate(item.href)
+						}}>
 							{item.title}
 						</Anchor>
 						))
@@ -89,7 +93,10 @@ const EditUserForm: React.FC = () => {
 						<Button type="submit">
 							Update user
 						</Button>
-						<Button variant="outline" component="a" href="/users">
+						<Button variant="outline" onClick={() => {
+							setAnchor([{title: 'User', href: '/users'}])
+							navigate("/users")
+						}}>
 							Cancel
 						</Button>
 					</Group>

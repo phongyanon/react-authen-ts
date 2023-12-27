@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRecoilState } from 'recoil';
 import { 
   IconUser, 
   IconClipboardText, 
@@ -10,7 +11,9 @@ import {
   IconBook,
   IconMail
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import { Box, NavLink, Text } from '@mantine/core';
+import { anchorState } from '../../store/user';
 
 const nav_links = [
   { text: 'Navigation'},
@@ -29,6 +32,8 @@ const nav_links = [
 
 export function Navbar() {
   const [active, setActive] = useState(0);
+  const [_, setAchor] = useRecoilState(anchorState);
+  const navigate = useNavigate();
 
   const nav_items = nav_links.map((item, index) => {
     if (item.hasOwnProperty('text')) {
@@ -38,13 +43,17 @@ export function Navbar() {
     } else {
       return (
         <NavLink
-          href={item.path}
+          // href={item.path}
           key={item.label}
           active={index === active}
           label={item.label}
           // description={item.description}
           leftSection={item.leftSection}
-          onClick={() => setActive(index)}
+          onClick={() => {
+            setAchor([{title: (item.label as string), href: (item.path as string)}])
+            setActive(index)
+            navigate((item.path as string))
+          }}
           pl="md"
         />
       )
