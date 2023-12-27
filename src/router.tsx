@@ -3,6 +3,8 @@ import { MainLayout } from "./components/layout/Layout";
 import { ErrorPage } from "./components/error/ErrorPage";
 import Users from "./pages/user";
 import UserForm from "./pages/user/components/UserForm";
+import EditUserForm from "./pages/user/components/EditUserForm";
+import UserView from "./pages/user/components/UserView";
 
 export const router = createBrowserRouter([
   {
@@ -23,15 +25,15 @@ export const router = createBrowserRouter([
           },
           {
             path: "users/:user_id",
-            element: <h1>User by id</h1>,
+            element: <UserView/>,
           },
           {
             path: "/users/new",
-            element: <UserForm formType="add" initValue={null}/>,
+            element: <UserForm/>,
           },
           {
             path: "/users/:user_id/edit",
-            element: <UserForm formType="edit" initValue={null}/>,
+            element: <EditUserForm/>,
           },
           {
             path: "/profiles",

@@ -129,7 +129,7 @@ const Users: React.FC = () =>{
       </Table.Td>
       <Table.Td>
         <Group gap={0} justify="center">
-          <ActionIcon variant="subtle" color="gray">
+          <ActionIcon variant="subtle" color="gray" onClick={() => navigate(`/users/${item.id}`)}>
             <IconEye style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
           <ActionIcon variant="subtle" color="gray" onClick={() => navigate(`/users/${item.id}/edit`)}>
@@ -278,7 +278,7 @@ const Users: React.FC = () =>{
                 {item.email}
               </Text>
     
-              <Button variant="default" ml={0} mr={0} mt="md">
+              <Button variant="default" ml={0} mr={0} mt="md" onClick={() => navigate(`/users/${item.id}`)}>
                 View
               </Button>
     
