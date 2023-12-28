@@ -5,8 +5,10 @@ import Users from "./pages/user";
 import UserForm from "./pages/user/components/UserForm";
 import EditUserForm from "./pages/user/components/EditUserForm";
 import UserView from "./pages/user/components/UserView";
-import { Signin } from "./pages/authen/signin";
+import { Signin } from "./pages/authen/Signin";
 import { ForgotPassword } from "./pages/authen/ForgotPassword";
+import { Register } from "./pages/authen/Register";
+import { ProfileForm } from "./pages/profile/components/ProfileForm";
 
 export const router = createBrowserRouter([
   {
@@ -56,5 +58,13 @@ export const router = createBrowserRouter([
   {
     path: "/password/forgot",
     element: <ForgotPassword/>,
+  },
+  {
+    path: "/register",
+    element: <Register/>,
+  },
+  {
+    path: "/register/profile",
+    element: <ProfileForm/>,
   },
 ]);
