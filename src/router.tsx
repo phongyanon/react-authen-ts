@@ -5,6 +5,8 @@ import Users from "./pages/user";
 import UserForm from "./pages/user/components/UserForm";
 import EditUserForm from "./pages/user/components/EditUserForm";
 import UserView from "./pages/user/components/UserView";
+import { Signin } from "./pages/authen/signin";
+import { ForgotPassword } from "./pages/authen/ForgotPassword";
 
 export const router = createBrowserRouter([
   {
@@ -46,5 +48,13 @@ export const router = createBrowserRouter([
         ]
       }
     ],
+  },
+  {
+    path: "/signin",
+    element: <Signin/>,
+  },
+  {
+    path: "/password/forgot",
+    element: <ForgotPassword/>,
   },
 ]);
