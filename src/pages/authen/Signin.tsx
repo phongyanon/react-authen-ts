@@ -14,9 +14,14 @@ import {
 	IconBrandGoogle,
 	IconBrandFacebook
 } from '@tabler/icons-react';
+import { useDisclosure } from '@mantine/hooks';
 import classes from './Signin.module.css';
+import PolicyModal from '../../components/policy/Policy';
+import TermsOfUseModal from '../../components/policy/TermsOfUse';
 
 export function Signin() {
+  const [policyOpened, policyOpenHandler] = useDisclosure(false);
+	const [termsOfUseOpened, termsOfUseOpenHandler] = useDisclosure(false);
   return (
     <div className={classes.wrapper}>
       <Paper className={classes.form} radius={0} p={30}>
@@ -48,7 +53,17 @@ export function Signin() {
             Forgot password
           </Anchor>
         </Text>
+
+        <Text ta="center" mt="xl" c="dimmed" size="xs">
+          By clicking sign in with Google or Facebook. you agree to {' '}
+          <Text td="underline" span style={{"cursor": "pointer"}} onClick={() => termsOfUseOpenHandler.open()}>Term of Use</Text> {' '}and{' '}
+          <Text td="underline" span style={{"cursor": "pointer"}} onClick={() => policyOpenHandler.open()}>Privacy Policy</Text>.
+          We may send you communications. you may change your preference in your account setting.
+          We'll never post without your permission.
+        </Text>
       </Paper>
+      <PolicyModal opened={policyOpened} close={policyOpenHandler.close}/>
+			<TermsOfUseModal opened={termsOfUseOpened} close={termsOfUseOpenHandler.close}/>
     </div>
   );
 }
