@@ -119,7 +119,7 @@ export function ProfileForm() {
 							We'll never post without your permission.
 						</Text>
 						<Group justify="space-around" mt="lg" grow>
-							<Button type="submit" leftSection={<IconUserPlus size={20}/>}>
+							<Button type="submit" leftSection={<IconUserPlus size={20}/>} onClick={() => navigate("/register/image/profile")}>
 								Continue
 							</Button>
 						</Group>
