@@ -9,10 +9,10 @@ import '@mantine/charts/styles.css';
 import { mockData } from "./mockData";
 
 const data = [
-  { title: 'PM2.5', icon: 'receipt', value: 13456, diff: 34 },
-  { title: 'PM10', icon: 'coin', value: 4145, diff: -13 },
-  { title: 'Ozone', icon: 'discount', value: 745, diff: 18 },
-  { title: 'Temp C', icon: 'user', value: 188, diff: -30 },
+  { title: 'PM2.5', icon: 'receipt', value: mockData.iaqi.pm25.v, diff: 34 },
+  { title: 'PM10', icon: 'coin', value: mockData.iaqi.pm10.v, diff: -13 },
+  { title: 'Ozone', icon: 'discount', value: mockData.iaqi.o3.v, diff: 18 },
+  { title: 'Temp C', icon: 'user', value: mockData.iaqi.t.v, diff: -3 },
 ] as const;
 
 const Overview: React.FC = () =>{
