@@ -11,6 +11,7 @@ import { Register } from "./pages/authen/Register";
 import { ProfileForm } from "./pages/profile/components/ProfileForm";
 import { ImageProfile } from "./pages/profile/components/ImageProfile";
 import { NewPassword } from "./pages/authen/NewPassword";
+import Overview from "./pages/overview";
 
 export const router = createBrowserRouter([
   {
@@ -23,7 +24,7 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "/",
-            element: <h1>Overview</h1>,
+            element: <Overview/>,
           },
           {
             path: "/users",
