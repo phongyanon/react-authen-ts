@@ -12,8 +12,14 @@ import { ProfileForm } from "./pages/profile/components/ProfileForm";
 import { ImageProfile } from "./pages/profile/components/ImageProfile";
 import { NewPassword } from "./pages/authen/NewPassword";
 import Overview from "./pages/overview";
+import { LandingPage } from "./components/landing/landing";
 
 export const router = createBrowserRouter([
+  {
+    path: "/",
+    errorElement: <ErrorPage />,
+    element: <LandingPage/>,
+  },
   {
     path: "",
     errorElement: <ErrorPage />,
@@ -23,7 +29,7 @@ export const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
           {
-            path: "/",
+            path: "/overview",
             element: <Overview/>,
           },
           {

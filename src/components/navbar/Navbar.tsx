@@ -17,7 +17,7 @@ import { anchorState } from '../../store/user';
 
 const nav_links = [
   { text: 'Navigation'},
-  { label: 'Overview', leftSection: <IconHome size="1rem" stroke={1.5} />, path: "/" },
+  { label: 'Overview', leftSection: <IconHome size="1rem" stroke={1.5} />, path: "/overview" },
   { label: 'User', leftSection: <IconUser size="1rem" stroke={1.5} />, path: "/users" },
   { label: 'Profile', leftSection: <IconClipboardText size="1rem" stroke={1.5} />, path: "/profiles" },
   { label: 'Verification', leftSection: <IconClipboardCheck size="1rem" stroke={1.5} />, path: "/verifications" },
