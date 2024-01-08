@@ -18,32 +18,40 @@ import {
 	IconBrandFacebook
 } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
+import { useNavigate } from 'react-router-dom';
 import classes from './Signin.module.css';
 import PolicyModal from '../../components/policy/Policy';
 import TermsOfUseModal from '../../components/policy/TermsOfUse';
 import { signin } from '../../services/authen';
-import { ISigninForm } from '../../types/authen.type';
+import { ISignin } from '../../types/authen.type';
 
 export function Signin() {
   const [policyOpened, policyOpenHandler] = useDisclosure(false);
 	const [termsOfUseOpened, termsOfUseOpenHandler] = useDisclosure(false);
   const [loaderVisible, loaderHandler ] = useDisclosure(false);
   const [formError, setFormError] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const form = useForm({
     initialValues: {
       username: '',
-      password: '',
-      keepSignin: false,
+      password: ''
     }}
   )
   
-  const signinSubmit = (values: ISigninForm) => {
+  const signinSubmit = async (values: ISignin) => {
     // console.log(values);
     // loaderHandler.toggle();
     // setTimeout(() => loaderHandler.close(), 1000);
-    let result = signin({username: values.username, password: values.password});
-    console.log(result);
+    let result = await signin({username: values.username, password: values.password});
+    console.log("result: ", result);
+    if (result.error === 'Invalid username or password') {
+      setFormError(true);
+    } else {
+      localStorage.setItem('access_token', result.access_token);
+      localStorage.setItem('refresh_token', result.refresh_token);
+      navigate("/overview");
+    }
   }
 
   return (
@@ -82,7 +90,6 @@ export function Signin() {
             size="md" 
             error={formError ? "Invalid username or password": formError}
           />
-          <Checkbox label="Keep me sign in" mt="xl" size="md" {...form.getInputProps('keepSignin', { type: 'checkbox' })} />
           <Button fullWidth mt="xl" size="md" type='submit'>
             Sign in
           </Button>

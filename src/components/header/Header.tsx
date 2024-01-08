@@ -20,13 +20,28 @@ import {
   IconLogout, 
   IconBell 
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mantine/hooks';
+import { useRecoilState } from 'recoil';
+import { userState } from "../../store/user";
+import { signout } from '../../services/authen';
 
 export function Header() {
+  const [currentUser, _] = useRecoilState(userState);
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
   const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
   const isMobileL = useMediaQuery(`(max-width: ${em(500)})`);
+  const navigate = useNavigate();
+
+  const signOutHandler = async () => {
+    try {
+      await signout();
+      navigate('/signin');
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <Group justify="flex-end">
@@ -85,7 +100,7 @@ export function Header() {
         <Menu.Target>
           <UnstyledButton style={{display: "flex", alignItems: "center"}}>
             <Avatar color="cyan" radius="xl">US</Avatar>
-            {isMobileL ? <></>: <Text ml={16}>Username</Text>}
+            {isMobileL ? <></>: <Text ml={16}>{currentUser?.username}</Text>}
           </UnstyledButton>
         </Menu.Target>
         <Menu.Dropdown>
@@ -100,8 +115,8 @@ export function Header() {
               direction="column"
               wrap="wrap"
             >
-              <Text size="sm">Username</Text>
-              <Text c="dimmed" size="sm">User@email.com</Text>
+              <Text size="sm">{currentUser?.username}</Text>
+              <Text c="dimmed" size="sm">{currentUser?.email}</Text>
             </Flex>
           </Group>
           <Menu.Divider />
@@ -115,7 +130,7 @@ export function Header() {
             Account setting
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item leftSection={<IconLogout size={15}/>}>
+          <Menu.Item leftSection={<IconLogout size={15}/>} onClick={() => signOutHandler()}>
             Sign out
           </Menu.Item>
         </Menu.Dropdown>

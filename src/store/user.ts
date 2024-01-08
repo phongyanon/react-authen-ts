@@ -1,9 +1,9 @@
 import { atom, selector } from "recoil";
-import { IUser } from "../types/user.type";
+import { IUserInfo } from "../types/user.type";
 import { IAnchor } from "../types/anchor.type";
 
-export const userState = atom<IUser | undefined>({
-    key: "user",
+export const userState = atom<IUserInfo | undefined>({
+    key: "current_user",
     default: undefined
 })
 
