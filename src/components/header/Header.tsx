@@ -27,7 +27,7 @@ import { userState } from "../../store/user";
 import { signout } from '../../services/authen';
 
 export function Header() {
-  const [currentUser, _] = useRecoilState(userState);
+  const [currentUser, setCurrentUser] = useRecoilState(userState);
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
   const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
@@ -36,6 +36,7 @@ export function Header() {
 
   const signOutHandler = async () => {
     try {
+      setCurrentUser(undefined);
       await signout();
       navigate('/signin');
     } catch (error) {

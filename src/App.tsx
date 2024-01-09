@@ -3,7 +3,7 @@ import { Notifications } from "@mantine/notifications"
 import '@mantine/core/styles.css';
 // import theme from "./theme"
 import { RouterProvider } from "react-router-dom";
-import { router } from './router.tsx'
+import { Router } from "./router";
 import { QueryClientProvider, QueryClient } from "react-query"
 
 const client = new QueryClient()
@@ -15,7 +15,7 @@ const App = () => {
     >
       <QueryClientProvider client={client}>
         <Notifications position="top-right" zIndex={999} />
-        <RouterProvider router={router} />
+        <Router/>
       </QueryClientProvider>
     </MantineProvider>
   )

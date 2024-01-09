@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRecoilState } from 'recoil';
 import {
   Paper,
   TextInput,
@@ -24,8 +25,12 @@ import PolicyModal from '../../components/policy/Policy';
 import TermsOfUseModal from '../../components/policy/TermsOfUse';
 import { signin } from '../../services/authen';
 import { ISignin } from '../../types/authen.type';
+import { getCurrentUser, getCurrentProfile } from '../../services/user';
+import { IUserInfo } from '../../types/user.type';
+import { userState } from '../../store/user';
 
 export function Signin() {
+  const [currentUser, setCurrentUser] = useRecoilState(userState);
   const [policyOpened, policyOpenHandler] = useDisclosure(false);
 	const [termsOfUseOpened, termsOfUseOpenHandler] = useDisclosure(false);
   const [loaderVisible, loaderHandler ] = useDisclosure(false);
@@ -44,12 +49,22 @@ export function Signin() {
     // loaderHandler.toggle();
     // setTimeout(() => loaderHandler.close(), 1000);
     let result = await signin({username: values.username, password: values.password});
-    console.log("result: ", result);
     if (result.error === 'Invalid username or password') {
       setFormError(true);
     } else {
       localStorage.setItem('access_token', result.access_token);
       localStorage.setItem('refresh_token', result.refresh_token);
+
+      Promise.all([getCurrentUser(), getCurrentProfile()]).then((values) => {
+        if ((values[0] !== null) && (values[1].image_profile)) {
+          let user_info: IUserInfo = values[0];
+          user_info.image_profile = values[1];
+          setCurrentUser(user_info);
+        }
+        else if (values[0] !== null) {
+          setCurrentUser(values[0]);
+        }
+      });
       navigate("/overview");
     }
   }
