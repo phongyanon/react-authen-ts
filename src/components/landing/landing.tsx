@@ -7,6 +7,7 @@ import {
 	Text, 
 	Group, 
 	ActionIcon,
+  ThemeIcon,
 	useComputedColorScheme,
 	useMantineColorScheme,
 	useMantineTheme,
@@ -15,6 +16,9 @@ import {
 	SimpleGrid,
 	em,
 	rem,
+  NumberFormatter,
+  Divider,
+  List
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -27,13 +31,15 @@ import {
 	IconBrandTwitter,
 	IconBrandYoutube,
 	IconBrandFacebook,
+  IconCheck,
+  IconX,
  } from '@tabler/icons-react';
 import classes from './landing.module.css';
 import { useMediaQuery } from '@mantine/hooks';
 
 const links = [
-  { link: '/about', label: 'Features' },
-  { link: '/pricing', label: 'Pricing' },
+  { link: '#featuresRef', label: 'Features' },
+  { link: '#pricingRef', label: 'Pricing' },
   { link: '/document', label: 'Document' },
   { link: '/contact', label: 'Contact' },
 ];
@@ -59,6 +65,48 @@ const featureList = [
   },
 ];
 
+const priceList = [
+  {
+    title: 'Basic/Free',
+    price: '0',
+    features: [
+      {enable: true, name: 'Theme dark and light'},
+      {enable: true, name: 'Dual language'},
+      {enable: true, name: 'User management'},
+      {enable: false, name: '2 factors authentication'},
+      {enable: false, name: 'Super admin role'},
+      {enable: false, name: 'History record'},
+      {enable: false, name: 'Real-time notification'},
+    ],
+  },
+  {
+    title: 'Pro',
+    price: '99',
+    features: [
+      {enable: true, name: 'Theme dark and light'},
+      {enable: true, name: 'Dual language'},
+      {enable: true, name: 'User management'},
+      {enable: true, name: '2 factors authentication'},
+      {enable: true, name: 'Super admin role'},
+      {enable: false, name: 'History record'},
+      {enable: false, name: 'Real-time notification'},
+    ],
+  },
+  {
+    title: 'Premium',
+    price: '199',
+    features: [
+      {enable: true, name: 'Theme dark and light'},
+      {enable: true, name: 'Dual language'},
+      {enable: true, name: 'User management'},
+      {enable: true, name: '2 factors authentication'},
+      {enable: true, name: 'Super admin role'},
+      {enable: true, name: 'History record'},
+      {enable: true, name: 'Real-time notification'},
+    ],
+  },
+]
+
 export function LandingPage() {
   const { setColorScheme } = useMantineColorScheme();
 	const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
@@ -81,12 +129,47 @@ export function LandingPage() {
       </Text>
     </Card>
   ));
+  const prices = priceList.map((price) => (
+    <Card key={price.title} shadow="md" radius="md" className={classes.card} padding="xl">
+      <Title fw={700} order={2} mt="xs">
+        {price.title}
+      </Title>
+      <NumberFormatter prefix="TH " value={price.price} suffix=" / Month" thousandSeparator />
+      <Divider size="md" mt={12} mb={12} />
+      <List
+        m={24}
+        spacing="md"
+        size="sm"
+        center
+      >
+        {price.features.map( (obj: any) => (
+          <List.Item
+            key={obj.name}
+            icon={ obj.enable ?
+            <ThemeIcon variant="light" radius="lg" color="teal">
+              <IconCheck style={{ width: '70%', height: '70%' }} />
+            </ThemeIcon>:
+            <ThemeIcon variant="light" radius="lg" color="red">
+              <IconX style={{ width: '70%', height: '70%' }} />
+            </ThemeIcon>
+            }
+          >
+            {obj.name}
+          </List.Item>
+        ))}
+      
+      </List>
+      <Button color="blue" fullWidth mt="md" radius="md">
+        Get started
+      </Button>
+    </Card>
+  ))
   const items = links.map((link) => (
     <a
       key={link.label}
       href={link.link}
       className={classes.link}
-      onClick={(event) => event.preventDefault()}
+      // onClick={(event) => event.preventDefault()}
     >
       {link.label}
     </a>
@@ -149,7 +232,7 @@ export function LandingPage() {
     </div>
 		<Container size="lg" py="xl">
 
-      <Title order={2} className={classes.featureTitle} ta="center" mt="sm">
+      <Title id="featuresRef" order={2} className={classes.featureTitle} ta="center" mt="sm">
         Boilerplate project for startup MVP
       </Title>
 
@@ -162,6 +245,17 @@ export function LandingPage() {
         {features}
       </SimpleGrid>
     </Container>
+
+    <Container size="lg" py="xl">
+      <Title id="pricingRef" order={2} className={classes.featureTitle} ta="center" mt="sm">
+        Pricing
+      </Title>
+
+      <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl" mt={50}>
+        {prices}
+      </SimpleGrid>
+    </Container>
+
 		<div className={classes.footer}>
       <div className={classes.inner}>
 				<Group preventGrowOverflow={false}>
