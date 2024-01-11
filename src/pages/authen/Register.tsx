@@ -1,3 +1,4 @@
+import { useRecoilState } from 'recoil';
 import { 
 	Paper, 
 	TextInput, 
@@ -18,8 +19,10 @@ import {
 	IconUserPlus
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import { userFormState } from '../../store/user';
 
 export function Register(){
+	const [_, setUserForm] = useRecoilState(userFormState);
 	const navigate = useNavigate();
   const form = useForm({
     initialValues: {
@@ -37,6 +40,12 @@ export function Register(){
     },
   });
 
+	const registerUserHandler = () => {
+		console.log(form.values);
+		setUserForm(form.values);
+		navigate("/register/profile");
+	}
+
 	return (
 		<Container size={460} my={30}>	
 			<Center pb={12}><Title order={1}>Sign up</Title></Center>
@@ -47,13 +56,13 @@ export function Register(){
 			
 			<Paper withBorder shadow="md" p={30} radius="md" mt="xl">
 
-				<form onSubmit={form.onSubmit(() => {console.log(form.values)})}>
+				<form onSubmit={form.onSubmit(() => registerUserHandler())}>
 					<Box maw={340} mx="auto">
 						<TextInput name="email" mt="md" label="Email" placeholder="Email" {...form.getInputProps('email')} required  />
 						<PasswordInput name="password" mt="md" label="Password" placeholder="Password" {...form.getInputProps('password')} required  />
 						
 						<Group justify="space-around" mt="lg" grow>
-							<Button type="submit" leftSection={<IconUserPlus size={20}/>} onClick={() => navigate("/register/profile")}>
+							<Button type="submit" leftSection={<IconUserPlus size={20}/>}>
 								Sign up
 							</Button>
 						</Group>

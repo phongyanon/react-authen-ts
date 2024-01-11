@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRecoilState } from 'recoil';
 import { 
 	Paper, 
 	TextInput, 
@@ -13,23 +14,25 @@ import {
 	rem,
 	Select,
 	Textarea,
-	Divider
+	Divider,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { 
 	IconArrowLeft,
 	IconUserPlus
 } from '@tabler/icons-react';
-import { useForm } from '@mantine/form';
+import { useForm, matches } from '@mantine/form';
 import '@mantine/dates/styles.css';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
+import { userFormState } from '../../../store/user';
 import { dateParser } from '../../../utils/date';
 import PolicyModal from '../../../components/policy/Policy';
 import TermsOfUseModal from '../../../components/policy/TermsOfUse';
 
 export function ProfileForm() {
 	const navigate = useNavigate();
+	const [userForm, _] = useRecoilState(userFormState);
 	const [otherGenderVisible, setOtherGenderVisible] = useState<boolean>(false);
 	const [policyOpened, policyOpenHandler] = useDisclosure(false);
 	const [termsOfUseOpened, termsOfUseOpenHandler] = useDisclosure(false);
@@ -47,9 +50,18 @@ export function ProfileForm() {
 			zip_code: '',
 			phone: ''
     },
-    // validate: {
-    // },
+    validate: {
+			zip_code: (value: any) => (
+				value !== '' ? (/^([0-9])/.test(value)? null : 'Enter in type number') : null
+			),
+		},
   });
+
+	const profileFormHandler = () => {
+		console.log(form.values);
+		console.log(userForm);
+		// navigate("/register/image/profile");
+	}
 
 	return (
 		<Container size={860} my={30}>
@@ -60,10 +72,10 @@ export function ProfileForm() {
 
 			<Paper p={36} mt={16} shadow="md" radius="md" withBorder>
 
-				<form onSubmit={form.onSubmit(() => {console.log(form.values)})}>
+				<form onSubmit={form.onSubmit(() => profileFormHandler())}>
 					<Box maw={340} mx="auto">
-						<TextInput name="firstname_en" label="Firstname" placeholder="Firstname" {...form.getInputProps('firstname_en')} required/>
-						<TextInput name="lastname_en" mt="md" label="Lastname" placeholder="Lastname" {...form.getInputProps('lastname_en')} required/>
+						<TextInput name="firstname_en" label="First name" placeholder="Firstname" {...form.getInputProps('firstname_en')} required/>
+						<TextInput name="lastname_en" mt="md" label="Last name" placeholder="Lastname" {...form.getInputProps('lastname_en')} required/>
 						<DateInput
 							name="date_of_birth"
 							dateParser={dateParser}
@@ -79,9 +91,15 @@ export function ProfileForm() {
 								w={120}
 								label="Gender"
 								placeholder="Gender"
-								data={['Male', 'Female', 'Other']}
+								name="gender"
+								data={[
+									{ value: 'male', label: 'Male' },
+									{ value: 'female', label: 'Female' },
+									{ value: 'other', label: 'Other' }
+								]}
+								{...form.getInputProps('gender')}
 								defaultValue=''
-								onChange={(value) => {value !== 'Other' ? setOtherGenderVisible(false): setOtherGenderVisible(true)}}
+								onOptionSubmit={(value: any) => {value !== 'other' ? setOtherGenderVisible(false): setOtherGenderVisible(true)}}
 								clearable
 							/>
 							{otherGenderVisible === true ?
@@ -95,14 +113,15 @@ export function ProfileForm() {
 							autosize
 							minRows={2}
 							mt="md"
+							{...form.getInputProps('address_en')}
 						/>
 						<TextInput w={120} mt="md" name="zip_code" label="Zip code" placeholder="Zip code" {...form.getInputProps('zip_code')}/>							
 						<TextInput mt="md" name="phone" label="Phone number" placeholder="Phone number" {...form.getInputProps('phone')}/>							
 						
 						<Divider mt="md" my="xs" label="Infomation in thai" labelPosition="center" />
 
-						<TextInput name="firstname_th" label="Firstname in thai" placeholder="Firstname in thai" {...form.getInputProps('firstname_th')}/>
-						<TextInput name="lastname_th" mt="md" label="Lastname in thai" placeholder="Lastname in thai" {...form.getInputProps('lastname_th')}/>
+						<TextInput name="firstname_th" label="First name in thai" placeholder="Firstname in thai" {...form.getInputProps('firstname_th')}/>
+						<TextInput name="lastname_th" mt="md" label="Last name in thai" placeholder="Lastname in thai" {...form.getInputProps('lastname_th')}/>
 						<Textarea
 							name="address_th"
 							placeholder="Address in thai"
@@ -110,6 +129,7 @@ export function ProfileForm() {
 							autosize
 							minRows={2}
 							mt="md"
+							{...form.getInputProps('address_th')}
 						/>
 						<Text ta="center" mt="xl" c="dimmed" size="xs">
 							By clicking Continue. you agree to {' '}
@@ -119,7 +139,7 @@ export function ProfileForm() {
 							We'll never post without your permission.
 						</Text>
 						<Group justify="space-around" mt="lg" grow>
-							<Button type="submit" leftSection={<IconUserPlus size={20}/>} onClick={() => navigate("/register/image/profile")}>
+							<Button type="submit" leftSection={<IconUserPlus size={20}/>}>
 								Continue
 							</Button>
 						</Group>

@@ -14,6 +14,7 @@ import {
 	Card,
 	Flex,
 	SimpleGrid,
+  Box,
 	em,
 	rem,
   NumberFormatter,
@@ -41,7 +42,7 @@ const links = [
   { link: '#featuresRef', label: 'Features' },
   { link: '#pricingRef', label: 'Pricing' },
   { link: '/document', label: 'Document' },
-  { link: '/contact', label: 'Contact' },
+  { link: '#contactRef', label: 'Contact' },
 ];
 
 const featureList = [
@@ -67,7 +68,7 @@ const featureList = [
 
 const priceList = [
   {
-    title: 'Basic/Free',
+    title: 'Basic / Free',
     price: '0',
     features: [
       {enable: true, name: 'Theme dark and light'},
@@ -159,7 +160,13 @@ export function LandingPage() {
         ))}
       
       </List>
-      <Button color="blue" fullWidth mt="md" radius="md">
+      <Button 
+        variant="gradient" 
+        gradient={{ from: 'blue', to: 'grape', deg: 150 }} 
+        fullWidth 
+        mt="md" 
+        radius="md"
+      >
         Get started
       </Button>
     </Card>
@@ -255,6 +262,27 @@ export function LandingPage() {
         {prices}
       </SimpleGrid>
     </Container>
+
+    {/* <Container size="md" py="xl">
+      <Title id="contactRef" order={2} className={classes.featureTitle} ta="center" mt="sm">
+        Contact
+      </Title>
+
+      <Card shadow="sm" padding={0} radius="md" mt={50}>
+        <Flex
+          direction={{ base: 'column', md: 'row' }}
+          gap={0}
+          justify={{ sm: 'center' }}
+        >
+          <Box style={{borderRadius: '10px'}} bg='blue.9' w={{base: '100%', md: '40%'}}>
+            <Text fw='bolder' ta='center' size='lg' mt='lg' c='#fff'>
+              Contact infomation
+            </Text>
+          </Box>
+          <Box w={{base: '100%', md: '60%'}}>2</Box>
+        </Flex>
+      </Card>
+    </Container> */}
 
 		<div className={classes.footer}>
       <div className={classes.inner}>
