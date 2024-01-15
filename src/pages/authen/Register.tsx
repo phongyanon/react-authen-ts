@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { 
 	Paper, 
@@ -11,18 +12,25 @@ import {
 	Container, 
 	Text,
 	rem,
+	LoadingOverlay,
 	Anchor
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
 import { 
 	IconArrowLeft,
 	IconUserPlus
 } from '@tabler/icons-react';
+import { registerUser } from '../../services/user';
+import { getCurrentUser } from '../../services/user';
+import { signin } from '../../services/authen';
 import { useNavigate } from 'react-router-dom';
-import { userFormState } from '../../store/user';
+import { userState } from '../../store/user';
 
 export function Register(){
-	const [_, setUserForm] = useRecoilState(userFormState);
+	const [currentUser, setCurrentUser] = useRecoilState(userState);
+	const [formError, setFormError] = useState<boolean>(false);
+	const [loaderVisible, loaderHandler ] = useDisclosure(false);
 	const navigate = useNavigate();
   const form = useForm({
     initialValues: {
@@ -40,10 +48,45 @@ export function Register(){
     },
   });
 
-	const registerUserHandler = () => {
-		console.log(form.values);
-		setUserForm(form.values);
-		navigate("/register/profile");
+	const signInAfterRegister = (username: string, password: string) => {
+		return new Promise( async resolve => {
+			try {
+				const signin_result = await signin({username: username, password: password});
+				localStorage.setItem('access_token', signin_result.access_token);
+				localStorage.setItem('refresh_token', signin_result.refresh_token);
+				const user_result = await getCurrentUser();
+
+				if (user_result !== null) {
+					console.log('>> ', user_result)
+					setCurrentUser(user_result);
+					resolve(true);
+				} else resolve(false);
+			} catch (err) {
+				resolve(false);
+			}
+		});
+	}
+
+	const registerUserHandler = async () => {
+		// console.log(form.values);
+		try {
+		
+			loaderHandler.toggle();
+			let result = await registerUser(form.values);
+	
+			if (result.error === 'Duplicated username or email'){
+				setFormError(true);
+				loaderHandler.close();
+			} else {
+				await signInAfterRegister(form.values.email, form.values.password);
+				loaderHandler.close();
+				navigate("/register/profile");
+			}
+
+		} catch (error) {
+			loaderHandler.close();
+			console.log(error);
+		}
 	}
 
 	return (
@@ -55,11 +98,32 @@ export function Register(){
 			
 			
 			<Paper withBorder shadow="md" p={30} radius="md" mt="xl">
-
+				<LoadingOverlay
+          visible={loaderVisible}
+          zIndex={1000}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+          loaderProps={{ color: 'violet', type: 'bars' }}
+        />
 				<form onSubmit={form.onSubmit(() => registerUserHandler())}>
 					<Box maw={340} mx="auto">
-						<TextInput name="email" mt="md" label="Email" placeholder="Email" {...form.getInputProps('email')} required  />
-						<PasswordInput name="password" mt="md" label="Password" placeholder="Password" {...form.getInputProps('password')} required  />
+						<TextInput 
+							name="email" 
+							mt="md" 
+							label="Email" 
+							placeholder="Email" 
+							{...form.getInputProps('email')} 
+							required  
+							error={formError}
+						/>
+						<PasswordInput 
+							name="password" 
+							mt="md" 
+							label="Password" 
+							placeholder="Password" 
+							{...form.getInputProps('password')} 
+							required  
+							error={formError ? "Duplicated username or email": formError}
+						/>
 						
 						<Group justify="space-around" mt="lg" grow>
 							<Button type="submit" leftSection={<IconUserPlus size={20}/>}>

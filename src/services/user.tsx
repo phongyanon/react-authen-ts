@@ -1,6 +1,6 @@
 import { api } from "../utils/axios";
 import { getTokenDecode } from "../utils/token";
-import { ITokenDecode } from "../types/user.type";
+import { ITokenDecode, IUserForm, IProfileForm } from "../types/user.type";
 
 export const getCurrentUser = async () => {
 	try {
@@ -55,5 +55,37 @@ export const getCurrentProfile = async () => {
 	} catch (err: any) {
 		console.log('getCurrentProfile: ', err);
     return(err.response)
+	}
+}
+
+export const registerUser = async (body :IUserForm) => {
+	try {
+		let res = await api.post('/signup', {
+			username: body.email,
+			email: body.email,
+			password: body.password
+		});
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('registerUser: ', err);
+    return(err.response.data)
+	}
+}
+
+export const registerProfile = async (body: IProfileForm) => {
+	try {
+		let res = await api.post(`/user/profile/${body.user_id}`, body);
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('registerProfile: ', err);
+    return(err.response.data)
 	}
 }

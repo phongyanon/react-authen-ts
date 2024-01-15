@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-import { IUserInfo, IUserForm } from "../types/user.type";
+import { IUserInfo, IRegisterState } from "../types/user.type";
 import { IAnchor } from "../types/anchor.type";
 
 export const userState = atom<IUserInfo | undefined>({
@@ -12,8 +12,8 @@ export const anchorState = atom<IAnchor[]>({
     default: []
 })
 
-export const userFormState = atom<IUserForm | undefined>({
-    key: "current_user_form",
+export const registerState = atom<IRegisterState | undefined>({
+    key: "register_state",
     default: undefined
 })
 

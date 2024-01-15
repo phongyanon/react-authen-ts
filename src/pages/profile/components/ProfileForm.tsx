@@ -21,21 +21,24 @@ import {
 	IconArrowLeft,
 	IconUserPlus
 } from '@tabler/icons-react';
-import { useForm, matches } from '@mantine/form';
+import { useForm } from '@mantine/form';
 import '@mantine/dates/styles.css';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { userFormState } from '../../../store/user';
+import { registerState } from '../../../store/user';
 import { dateParser } from '../../../utils/date';
 import PolicyModal from '../../../components/policy/Policy';
 import TermsOfUseModal from '../../../components/policy/TermsOfUse';
+import { registerProfile } from '../../../services/user';
 
 export function ProfileForm() {
 	const navigate = useNavigate();
-	const [userForm, _] = useRecoilState(userFormState);
+	const [getRegisterState, _] = useRecoilState(registerState);
 	const [otherGenderVisible, setOtherGenderVisible] = useState<boolean>(false);
 	const [policyOpened, policyOpenHandler] = useDisclosure(false);
+	const [loading, loadingHandler] = useDisclosure(false);
 	const [termsOfUseOpened, termsOfUseOpenHandler] = useDisclosure(false);
+	const [errorText, setErrorText] = useState<string | null>(null);
   const form = useForm({
     initialValues: {
 			firstname_en: '',
@@ -57,10 +60,26 @@ export function ProfileForm() {
 		},
   });
 
-	const profileFormHandler = () => {
-		console.log(form.values);
-		console.log(userForm);
-		// navigate("/register/image/profile");
+	const profileFormHandler = async () => {
+		const profile_data = {
+			...form.values, 
+			date_of_birth: parseInt(form.values.date_of_birth.valueOf()) / 1000,
+			zip_code: parseInt(form.values.zip_code),
+			image_profile: '',
+			user_id: getRegisterState?.uid
+		}
+
+		loadingHandler.toggle();
+		console.log(profile_data);
+		// console.log(getRegisterState);
+		let result = await registerProfile(profile_data);
+		loadingHandler.close()
+
+		if (result.error){
+			setErrorText(result.error);
+		} else {
+			navigate("/register/image/profile");
+		}
 	}
 
 	return (
@@ -84,6 +103,7 @@ export function ProfileForm() {
 							label="Date of birth"
 							placeholder="DD/MM/YYYY"
 							{...form.getInputProps('date_of_birth')}
+							required
 							clearable 
 						/>
 						<Group justify="space-between" mt="lg">
@@ -139,10 +159,15 @@ export function ProfileForm() {
 							We'll never post without your permission.
 						</Text>
 						<Group justify="space-around" mt="lg" grow>
-							<Button type="submit" leftSection={<IconUserPlus size={20}/>}>
+							<Button type="submit" leftSection={<IconUserPlus size={20}/>} loading={loading}>
 								Continue
 							</Button>
 						</Group>
+						{errorText !== null ? 
+							<Group justify="center" p={12} gap={"xs"}>
+								<Text c="red" fz="sm" ta="center">{errorText}</Text>
+							</Group>
+							: <></>}
 						<Group justify="center" p={12} gap={"xs"}>
 							<Text c="dimmed" fz="sm" ta="center">
 								Already have an account then {' '}
