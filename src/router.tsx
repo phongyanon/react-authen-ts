@@ -159,16 +159,16 @@ export const Router = () => {
     {
       path: "/register/profile",
       element: 
-      <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+      <AuthRoute redirectPath="/overview" user={user}>
         <ProfileForm/>
-      </ProtectRoute>,
+      </AuthRoute>,
     },
     {
       path: "/register/image/profile",
       element: 
-        <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+        <AuthRoute redirectPath="/overview" user={user}>
           <ImageProfile/>
-        </ProtectRoute>,
+        </AuthRoute>,
     },
     {
       path: "/password/new",

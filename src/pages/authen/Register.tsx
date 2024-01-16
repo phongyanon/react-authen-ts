@@ -25,10 +25,11 @@ import { registerUser } from '../../services/user';
 import { getCurrentUser } from '../../services/user';
 import { signin } from '../../services/authen';
 import { useNavigate } from 'react-router-dom';
-import { userState } from '../../store/user';
+import { userState, registerState } from '../../store/user';
 
 export function Register(){
 	const [currentUser, setCurrentUser] = useRecoilState(userState);
+	const [_, setRegisterState] = useRecoilState(registerState);
 	const [formError, setFormError] = useState<boolean>(false);
 	const [loaderVisible, loaderHandler ] = useDisclosure(false);
 	const navigate = useNavigate();
@@ -48,19 +49,20 @@ export function Register(){
     },
   });
 
-	const signInAfterRegister = (username: string, password: string) => {
+	const getTokenAfterRegister = (username: string, password: string) => {
 		return new Promise( async resolve => {
 			try {
 				const signin_result = await signin({username: username, password: password});
-				localStorage.setItem('access_token', signin_result.access_token);
-				localStorage.setItem('refresh_token', signin_result.refresh_token);
-				const user_result = await getCurrentUser();
+				// localStorage.setItem('access_token', signin_result.access_token);
+				// localStorage.setItem('refresh_token', signin_result.refresh_token);
+				// const user_result = await getCurrentUser();
 
-				if (user_result !== null) {
-					console.log('>> ', user_result)
-					setCurrentUser(user_result);
-					resolve(true);
-				} else resolve(false);
+				// if (user_result !== null) {
+				// 	console.log('>> ', user_result)
+				// 	setCurrentUser(user_result);
+				// 	resolve(true);
+				// } else resolve(false);
+				resolve({access_token: signin_result.access_token, refresh_token: signin_result.refresh_token});
 			} catch (err) {
 				resolve(false);
 			}
@@ -73,14 +75,21 @@ export function Register(){
 		
 			loaderHandler.toggle();
 			let result = await registerUser(form.values);
-	
 			if (result.error === 'Duplicated username or email'){
 				setFormError(true);
 				loaderHandler.close();
 			} else {
-				await signInAfterRegister(form.values.email, form.values.password);
+				const token_result: any = await getTokenAfterRegister(form.values.email, form.values.password);
 				loaderHandler.close();
-				navigate("/register/profile");
+				if (token_result !== false) {
+					setRegisterState({
+						uid: result.id,
+						email: form.values.email,
+						access_token: token_result.access_token,
+						refresh_token: token_result.refresh_token,
+					})
+					navigate("/register/profile");
+				} 
 			}
 
 		} catch (error) {

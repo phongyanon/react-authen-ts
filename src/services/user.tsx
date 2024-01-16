@@ -1,4 +1,5 @@
-import { api } from "../utils/axios";
+import axios from "axios";
+import { api, BaseURL, BaseTimeout } from "../utils/axios";
 import { getTokenDecode } from "../utils/token";
 import { ITokenDecode, IUserForm, IProfileForm } from "../types/user.type";
 
@@ -76,9 +77,16 @@ export const registerUser = async (body :IUserForm) => {
 	}
 }
 
-export const registerProfile = async (body: IProfileForm) => {
+export const registerProfile = async (body: IProfileForm, access_token: string) => {
 	try {
-		let res = await api.post(`/user/profile/${body.user_id}`, body);
+		const options = {
+			headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${access_token}`
+			},
+			timeout: BaseTimeout
+		};
+		let res = await axios.post(`${BaseURL}/user/profile/${body.user_id}`, body, options);
     if ((res.status === 200) && res.data) {
 			return res.data;
 		} else {

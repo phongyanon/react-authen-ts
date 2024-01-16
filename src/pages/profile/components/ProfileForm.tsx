@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { 
 	Paper, 
 	TextInput, 
@@ -25,7 +25,7 @@ import { useForm } from '@mantine/form';
 import '@mantine/dates/styles.css';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { registerState } from '../../../store/user';
+import { userState, registerState } from '../../../store/user';
 import { dateParser } from '../../../utils/date';
 import PolicyModal from '../../../components/policy/Policy';
 import TermsOfUseModal from '../../../components/policy/TermsOfUse';
@@ -33,7 +33,8 @@ import { registerProfile } from '../../../services/user';
 
 export function ProfileForm() {
 	const navigate = useNavigate();
-	const [getRegisterState, _] = useRecoilState(registerState);
+	const user = useRecoilValue(userState);
+	const getRegisterState = useRecoilValue(registerState);
 	const [otherGenderVisible, setOtherGenderVisible] = useState<boolean>(false);
 	const [policyOpened, policyOpenHandler] = useDisclosure(false);
 	const [loading, loadingHandler] = useDisclosure(false);
@@ -41,15 +42,15 @@ export function ProfileForm() {
 	const [errorText, setErrorText] = useState<string | null>(null);
   const form = useForm({
     initialValues: {
-			firstname_en: '',
-			lastname_en: '',
-			firstname_th: '',
-			lastname_th: '',
+			first_name_EN: '',
+			last_name_EN: '',
+			first_name_TH: '',
+			last_name_TH: '',
 			date_of_birth: '',
 			gender: '',
-			other_gender: '',
-			address_en: '',
-			address_th: '',
+			// other_gender: '',
+			address_EN: '',
+			address_TH: '',
 			zip_code: '',
 			phone: ''
     },
@@ -61,18 +62,30 @@ export function ProfileForm() {
   });
 
 	const profileFormHandler = async () => {
+		const storage_token: string | null = localStorage.getItem('access_token');
+		let access_token: string = '';
+		let uid: string = '';
+
+		console.log('getRegisterState: ', getRegisterState);
+		console.log('storage_token: ', storage_token);
+
+		if (storage_token !== null) access_token = storage_token;
+		else if (getRegisterState?.access_token) access_token = getRegisterState?.access_token;
+		if (user) uid = user.uid;
+		else if (getRegisterState?.uid) uid = getRegisterState?.uid;
+
 		const profile_data = {
 			...form.values, 
 			date_of_birth: parseInt(form.values.date_of_birth.valueOf()) / 1000,
 			zip_code: parseInt(form.values.zip_code),
 			image_profile: '',
-			user_id: getRegisterState?.uid
+			user_id: uid
 		}
 
 		loadingHandler.toggle();
 		console.log(profile_data);
-		// console.log(getRegisterState);
-		let result = await registerProfile(profile_data);
+		
+		let result = await registerProfile(profile_data, access_token);
 		loadingHandler.close()
 
 		if (result.error){
@@ -93,8 +106,8 @@ export function ProfileForm() {
 
 				<form onSubmit={form.onSubmit(() => profileFormHandler())}>
 					<Box maw={340} mx="auto">
-						<TextInput name="firstname_en" label="First name" placeholder="Firstname" {...form.getInputProps('firstname_en')} required/>
-						<TextInput name="lastname_en" mt="md" label="Last name" placeholder="Lastname" {...form.getInputProps('lastname_en')} required/>
+						<TextInput name="first_name_EN" label="First name" placeholder="Firstname" {...form.getInputProps('first_name_EN')} required/>
+						<TextInput name="last_name_EN" mt="md" label="Last name" placeholder="Lastname" {...form.getInputProps('last_name_EN')} required/>
 						<DateInput
 							name="date_of_birth"
 							dateParser={dateParser}
@@ -119,37 +132,38 @@ export function ProfileForm() {
 								]}
 								{...form.getInputProps('gender')}
 								defaultValue=''
-								onOptionSubmit={(value: any) => {value !== 'other' ? setOtherGenderVisible(false): setOtherGenderVisible(true)}}
+								// onOptionSubmit={(value: any) => {value !== 'other' ? setOtherGenderVisible(false): setOtherGenderVisible(true)}}
 								clearable
 							/>
 							{otherGenderVisible === true ?
-								<TextInput name="other_gender" label="Other" placeholder="Gender" {...form.getInputProps('other_gender')}/>							
+								<></>
+								// <TextInput name="other_gender" label="Other" placeholder="Gender" {...form.getInputProps('other_gender')}/>							
 							: <></>}
 						</Group>
 						<Textarea
-							name="address_en"
+							name="address_EN"
 							placeholder="Address"
 							label="Address"
 							autosize
 							minRows={2}
 							mt="md"
-							{...form.getInputProps('address_en')}
+							{...form.getInputProps('address_EN')}
 						/>
 						<TextInput w={120} mt="md" name="zip_code" label="Zip code" placeholder="Zip code" {...form.getInputProps('zip_code')}/>							
 						<TextInput mt="md" name="phone" label="Phone number" placeholder="Phone number" {...form.getInputProps('phone')}/>							
 						
 						<Divider mt="md" my="xs" label="Infomation in thai" labelPosition="center" />
 
-						<TextInput name="firstname_th" label="First name in thai" placeholder="Firstname in thai" {...form.getInputProps('firstname_th')}/>
-						<TextInput name="lastname_th" mt="md" label="Last name in thai" placeholder="Lastname in thai" {...form.getInputProps('lastname_th')}/>
+						<TextInput name="first_name_TH" label="First name in thai" placeholder="Firstname in thai" {...form.getInputProps('first_name_TH')}/>
+						<TextInput name="last_name_TH" mt="md" label="Last name in thai" placeholder="Lastname in thai" {...form.getInputProps('last_name_TH')}/>
 						<Textarea
-							name="address_th"
+							name="address_TH"
 							placeholder="Address in thai"
 							label="Address in thai"
 							autosize
 							minRows={2}
 							mt="md"
-							{...form.getInputProps('address_th')}
+							{...form.getInputProps('address_TH')}
 						/>
 						<Text ta="center" mt="xl" c="dimmed" size="xs">
 							By clicking Continue. you agree to {' '}

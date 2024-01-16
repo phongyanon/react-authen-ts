@@ -1,8 +1,10 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 
+const BaseURL: string = `${import.meta.env.VITE_API_URL}/${import.meta.env.VITE_API_VERSION}`
+const BaseTimeout: number = 5000
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/${import.meta.env.VITE_API_VERSION}`,
-  timeout: 5000
+  baseURL: BaseURL,
+  timeout: BaseTimeout
 });
 
 api.interceptors.request.use(function (request: InternalAxiosRequestConfig) {
@@ -50,4 +52,4 @@ api.interceptors.response.use(function (response) {
   return Promise.reject(error);
 });
 
-export { api }
+export { api, BaseURL, BaseTimeout }

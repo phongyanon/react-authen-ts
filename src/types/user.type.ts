@@ -21,19 +21,21 @@ export interface IUserForm {
 export interface IRegisterState {
     uid: string
     email: string
+    access_token: string
+    refresh_token: string
 }
 
 export interface IProfileForm {
     user_id: string | undefined
-    firstname_en: string
-	lastname_en: string
-	firstname_th: string
-	lastname_th: string
+    first_name_EN: string
+	last_name_EN: string
+	first_name_TH: string
+	last_name_TH: string
 	date_of_birth: number
 	gender: string
-	other_gender: string
-	address_en: string
-	address_th: string
+	// other_gender: string
+	address_EN: string
+	address_TH: string
 	zip_code: number,
 	phone: string
     image_profile: string
