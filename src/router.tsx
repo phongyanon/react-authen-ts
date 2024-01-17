@@ -58,7 +58,7 @@ export const Router = () => {
       Promise.all([getCurrentUser(), getCurrentProfile()]).then((values) => {
         if ((values[0] !== null) && (values[1].image_profile)) {
           let user_info: IUserInfo = values[0];
-          user_info.image_profile = values[1];
+          user_info.image_profile = values[1].image_profile;
           setCurrentUser(user_info);
         }
         else if (values[0] !== null) {

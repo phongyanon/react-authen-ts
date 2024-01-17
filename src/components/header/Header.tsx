@@ -23,11 +23,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mantine/hooks';
 import { useRecoilState } from 'recoil';
-import { userState } from "../../store/user";
+import { userState, registerState } from "../../store/user";
 import { signout } from '../../services/authen';
 
 export function Header() {
   const [currentUser, setCurrentUser] = useRecoilState(userState);
+  const [_, setRegisterState] = useRecoilState(registerState);
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
   const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
@@ -37,6 +38,7 @@ export function Header() {
   const signOutHandler = async () => {
     try {
       setCurrentUser(undefined);
+      setRegisterState(undefined);
       await signout();
       navigate('/signin');
     } catch (error) {
@@ -100,14 +102,15 @@ export function Header() {
       <Menu shadow="md" width={200}>
         <Menu.Target>
           <UnstyledButton style={{display: "flex", alignItems: "center"}}>
-            <Avatar color="cyan" radius="xl">US</Avatar>
+            {/* <Avatar color="cyan" radius="xl">US</Avatar> */}
+            <Avatar src={currentUser?.image_profile} alt="it's me" />
             {isMobileL ? <></>: <Text ml={16}>{currentUser?.username}</Text>}
           </UnstyledButton>
         </Menu.Target>
         <Menu.Dropdown>
           <Group>
-            <Avatar color="cyan" radius="xl">US</Avatar>
-            {/* <Avatar src="avatar.png" alt="it's me" /> */}
+            {/* <Avatar color="cyan" radius="xl">US</Avatar> */}
+            <Avatar src={currentUser?.image_profile} alt="it's me" />
             <Flex
               mih={50}
               gap="0"
