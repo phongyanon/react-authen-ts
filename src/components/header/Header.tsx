@@ -99,7 +99,7 @@ export function Header() {
       </Menu>
       
 
-      <Menu shadow="md" width={200}>
+      <Menu shadow="md" width={240}>
         <Menu.Target>
           <UnstyledButton style={{display: "flex", alignItems: "center"}}>
             {/* <Avatar color="cyan" radius="xl">US</Avatar> */}

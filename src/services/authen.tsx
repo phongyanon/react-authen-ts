@@ -1,5 +1,5 @@
 import { api } from "../utils/axios";
-import { ISignin } from "../types/authen.type";
+import { ISignin, IReqResetPassword, INewPassword } from "../types/authen.type";
 
 export const signin = async (body: ISignin) => {
 	try {
@@ -28,6 +28,34 @@ export const signout = async () => {
 		}
 	} catch (err: any) {
 		console.log('signout err: ', err)
+    return(err.response.data)
+	}
+}
+
+export const requestResetPasswordEmail = async (body: IReqResetPassword) => {
+	try {
+		let res = await api.post('/password/reset/generate', body);
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('requestResetPasswordEmail: ', err);
+    return(err.response.data)
+	}
+}
+
+export const updateForgotPassword = async (body: INewPassword, user_id: string, token: string) => {
+	try {
+		let res = await api.put(`/reset/password/${user_id}/${token}`, body);
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('updateForgotPassword: ', err);
     return(err.response.data)
 	}
 }

@@ -66,9 +66,6 @@ export function ProfileForm() {
 		let access_token: string = '';
 		let uid: string = '';
 
-		console.log('getRegisterState: ', getRegisterState);
-		console.log('storage_token: ', storage_token);
-
 		if (storage_token !== null) access_token = storage_token;
 		else if (getRegisterState?.access_token) access_token = getRegisterState?.access_token;
 		if (user) uid = user.uid;
@@ -83,8 +80,6 @@ export function ProfileForm() {
 		}
 
 		loadingHandler.toggle();
-		console.log(profile_data);
-		
 		let result = await registerProfile(profile_data, access_token);
 		loadingHandler.close()
 

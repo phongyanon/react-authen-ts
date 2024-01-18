@@ -50,7 +50,7 @@ const EditImageProfileModal: React.FC<IProps> = (props) =>{
 
 	const uploadImageHandler = async () => {
 		let croppedResult: any = await showCroppedImage();
-		console.log('donee: ', croppedResult.croppedImage);
+		// console.log('donee: ', croppedResult.croppedImage);
 		setLoading.toggle();
 
 		try {

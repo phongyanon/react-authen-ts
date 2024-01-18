@@ -1,3 +1,4 @@
+import { useRecoilValue } from 'recoil';
 import { 
 	AppShell, 
 	Overlay, 
@@ -35,6 +36,7 @@ import {
   IconCheck,
   IconX,
  } from '@tabler/icons-react';
+ import { userState } from '../../store/user';
 import classes from './landing.module.css';
 import { useMediaQuery } from '@mantine/hooks';
 
@@ -110,6 +112,7 @@ const priceList = [
 
 export function LandingPage() {
   const { setColorScheme } = useMantineColorScheme();
+  const currentUser = useRecoilValue(userState);
 	const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
   const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
 	const theme = useMantineTheme();
@@ -206,8 +209,14 @@ export function LandingPage() {
 					<Flex visibleFrom="sm">
           {items}
 					</Flex>
-					<Button variant="subtle" radius="xs" onClick={() => navigate('/signin')}>Sign in</Button>
-					<Button variant="outline" radius="xs" onClick={() => navigate('/register')}>Sign up</Button>
+          {currentUser !== undefined  ?
+            <Button variant="outline" radius="xs" onClick={() => navigate('/overview')}>Dashboard</Button>
+            :
+            <>
+              <Button variant="subtle" radius="xs" onClick={() => navigate('/signin')}>Sign in</Button>
+					    <Button variant="outline" radius="xs" onClick={() => navigate('/register')}>Sign up</Button>
+            </>
+          }
         </Group>
       </Group>
     </AppShell.Header>
