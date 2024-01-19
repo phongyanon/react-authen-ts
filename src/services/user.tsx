@@ -97,3 +97,17 @@ export const registerProfile = async (body: IProfileForm, access_token: string) 
     return(err.response.data)
 	}
 }
+
+export const getUsersPagination = async (page: number, limit: number) => {
+	try {
+		let res = await api.get(`/pagination/users`, { params: { page: page, limit: limit } });
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('updateForgotPassword: ', err);
+    return(err.response.data)
+	}	
+}

@@ -40,3 +40,12 @@ export interface IProfileForm {
 	phone: string
     image_profile: string
 }
+
+export interface IUserList {
+    id: string
+    username: string
+    email: string
+    phone: string
+    // role: ['user']
+    status: string
+}

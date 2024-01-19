@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Avatar, 
   Text, 
@@ -32,69 +32,14 @@ import {
   IconPencil,
   IconEye
 } from '@tabler/icons-react';
-import { useMediaQuery, useDisclosure } from '@mantine/hooks';
+import { useMediaQuery, useDisclosure, usePagination } from '@mantine/hooks';
 import DeleteUserModal from './components/DeleteUserModal';
+import { getUsersPagination } from '../../services/user';
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from 'recoil';
 import { anchorState } from '../../store/user';
-
-const mockUsers = [
-  {
-    id: '1',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png",
-    first_name_EN: "Jane",
-    last_name_EN: "Fingerlicker",
-    username: "Fingerlicker",
-    email: "jfingerlicker@me.io",
-    phone: "+6699 9995555",
-    role: 'user',
-    status: 'active'
-  },
-  {
-    id: '2',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-7.png",
-    first_name_EN: "Pink",
-    last_name_EN: "Hotlicker",
-    username: "Hotlicker",
-    email: "Hotlicker@email.com",
-    phone: "+6693 9991111",
-    role: 'user',
-    status: 'active'
-  },
-  {
-    id: '3',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-6.png",
-    first_name_EN: "Elsa",
-    last_name_EN: "Alivelicker",
-    username: "Alivelicker",
-    email: "Alivelicker@email.com",
-    phone: "+6693 9992345",
-    role: 'user',
-    status: 'active'
-  },
-  {
-    id: '4',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png",
-    first_name_EN: "Blone",
-    last_name_EN: "Shortlicker",
-    username: "Shortlicker",
-    email: "Shortlicker@email.com",
-    phone: "+6692 2222345",
-    role: 'user',
-    status: 'inactive'
-  },
-  {
-    id: '5',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-4.png",
-    first_name_EN: "Sita",
-    last_name_EN: "Shortlicker",
-    username: "SitaShort",
-    email: "STShortlicker@email.com",
-    phone: "+6682 9002345",
-    role: 'admin',
-    status: 'active'
-  },
-]
+import { IUserList } from '../../types/user.type';
+import { mockUsers } from './mockUser';
 
 const Users: React.FC = () =>{
   const [anchor, setAchor] = useRecoilState(anchorState);
@@ -105,20 +50,47 @@ const Users: React.FC = () =>{
   const [delUserOpened, delUserHandlers] = useDisclosure(false);
   const [delUserId, setDelUserId] = useState<string>('');
   const navigate = useNavigate();
+  const [totalPage, setTotalPage]  = useState<number>(1);
+  const [page, setPage] = useState<number>(1);
+  const [userList, setUserList] = useState<IUserList[]>([]);
+  // const pagination = usePagination({ total: 10, page, onChange });
 
-  const rows = mockUsers.map((item) => (
+  const rows = userList.map((item) => (
     <Table.Tr key={`table-${item.id}`}>
       <Table.Td>
         <Group gap="sm">
-          <Avatar size={40} src={item.image_profile} radius={40} />
-          <Text fz="sm" fw={500}>
-            {item.username}
-          </Text>
+          {/* <Avatar size={40} src={item.image_profile} radius={40} /> */}
+          {item.username.length > 30 ? 
+            <Tooltip
+              withArrow
+              position="bottom-start"
+              transitionProps={{ duration: 200 }}
+              label={item.username}
+            >
+              <Text fz="sm" fw={500}>{item.username.slice(0, 30) + '...'}</Text>
+            </Tooltip>
+            : 
+            <Text fz="sm" fw={500}>{item.username}</Text>
+          }
         </Group>
       </Table.Td>
 
-      <Table.Td>{item.email}</Table.Td>
-      <Table.Td>{item.role}</Table.Td>
+      <Table.Td>
+        {item.email.length > 30 ? 
+          <Tooltip
+            withArrow
+            position="bottom-start"
+            transitionProps={{ duration: 200 }}
+            label={item.email}
+          >
+            <Text fz="sm" fw={400}>{item.email.slice(0, 30) + '...'}</Text>
+          </Tooltip>
+          : 
+          <Text fz="sm" fw={400}>{item.email}</Text>
+        }
+      </Table.Td>
+      {/* <Table.Td>{item.role.join(', ')}</Table.Td> */}
+      <Table.Td>User</Table.Td>
       <Table.Td width={150}>
         {item.status === 'active' ? (
           <Badge fullWidth variant="light">
@@ -158,6 +130,19 @@ const Users: React.FC = () =>{
     setDelUserId(userId);
     delUserHandlers.open();
   }
+
+  useEffect(() => {
+    getUsersPagination(page, 5).then(
+      (res) => {
+        // console.log('users: ', res)
+        if (res.error) console.log(res.err);
+        else {
+          setTotalPage(res.pagination.total_pages);
+          setUserList(res.data);
+        }
+      }
+    ).catch(err => console.log(err))
+  }, [page]);
 
   return (
     <>
@@ -207,12 +192,6 @@ const Users: React.FC = () =>{
                 </ActionIcon>
               </Popover.Target>
               <Popover.Dropdown>
-                <Text size="sm" c="dimmed">Gender</Text>
-                <Group p={12}>
-                  <Checkbox label="Male"/>
-                  <Checkbox label="Female"/>
-                  <Checkbox label="Others"/>
-                </Group>
                 <Text size="sm" c="dimmed">Verified</Text>
                 <Group p={12}>
                   <Checkbox label="Email"/>
@@ -249,11 +228,20 @@ const Users: React.FC = () =>{
       {viewMode === 'card' ? 
       <Grid justify="flex-start" mt={16}>
         {
-          mockUsers.map((item, index) => (
+          userList.map((item, index) => (
             <Grid.Col span={{ base: 12, md: 6, lg: 3 }} key={index}>
             <Group justify="center">
             <Card shadow="sm" padding="lg" radius="md" withBorder w={280} key={`card-${item.id}`}>
-              <Group justify="flex-end">
+              <Group justify="space-between">
+                {item.status === 'active' ? (
+                  <Badge size="lg" color="cyan">
+                    Active
+                  </Badge>
+                ) : (
+                  <Badge size="lg" color="gray">
+                    Inactive
+                  </Badge>
+                )}
                 <Menu withinPortal position="bottom-end" shadow="sm" width={120}>
                   <Menu.Target>
                     <ActionIcon variant="subtle" color="gray">
@@ -280,20 +268,47 @@ const Users: React.FC = () =>{
                   </Menu.Dropdown>
                 </Menu>
                 </Group>
-    
-              <Avatar
-                src={item.image_profile}
-                size={120}
-                radius={120}
-                mx="auto"
-              />
-              <Text ta="center" fz="lg" fw={500} mt="md">
-                {item.username}
+              {item.username.length > 30 ? 
+                <Tooltip
+                  withArrow
+                  position="bottom-start"
+                  transitionProps={{ duration: 200 }}
+                  label={item.username}
+                >
+                  <Text fz="lg" fw={500} mt="md">
+                    {item.username.slice(0, 30) + '...'}
+                  </Text>
+                </Tooltip>
+                : 
+                <Text fz="lg" fw={500} mt="md">
+                  {item.username}
+                </Text>
+              }
+              <Text fz="sm" c="dimmed" fw={400} mt="md">
+                Email
               </Text>
-              <Text ta="center" c="dimmed" fz="sm">
-                {item.email}
+              {item.email.length > 30 ? 
+                <Tooltip
+                  withArrow
+                  position="bottom-start"
+                  transitionProps={{ duration: 200 }}
+                  label={item.email}
+                >
+                  <Text fz="md" fw={500} ml="xs">
+                    {item.email.slice(0, 30) + '...'}    
+                  </Text>
+                </Tooltip>
+                : 
+                <Text fz="md" fw={500} ml="xs">
+                  {item.email}    
+                </Text>
+              }
+              <Text fz="sm" c="dimmed" fw={400} mt="md">
+                Role
               </Text>
-    
+              <Group mt="xs" ml="xs" gap={6}>
+                {['User'].map((r: any) => <Badge key={`${item.id}-${r}`} color="violet" radius="xs" variant="light">{r}</Badge>)}
+              </Group>
               <Button variant="default" ml={0} mr={0} mt="md" onClick={() => {
                 setAchor([...anchor, {title: item.username, href: '#'}])
                 navigate(`/users/${item.id}`)
@@ -324,7 +339,7 @@ const Users: React.FC = () =>{
       </Table.ScrollContainer>
       }
       <Group justify="center" pt={36}>
-        <Pagination total={10} />
+        <Pagination value={page} onChange={setPage} total={totalPage}/>
       </Group>
       <DeleteUserModal opened={delUserOpened} close={delUserHandlers.close} user_id={delUserId}/>
     </>

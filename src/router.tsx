@@ -11,6 +11,7 @@ import Users from "./pages/user";
 import UserForm from "./pages/user/components/UserForm";
 import EditUserForm from "./pages/user/components/EditUserForm";
 import UserView from "./pages/user/components/UserView";
+import Profiles from "./pages/profile";
 import { Signin } from "./pages/authen/Signin";
 import { ForgotPassword } from "./pages/authen/ForgotPassword";
 import { Register } from "./pages/authen/Register";
@@ -121,7 +122,7 @@ export const Router = () => {
               path: "/profiles",
               element: 
                 <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
-                  <h1>Profile</h1>
+                  <Profiles/>
                 </ProtectRoute>,
             },
             {
