@@ -261,7 +261,7 @@ const Users: React.FC = () =>{
                     <Menu.Item
                       leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
                       color="red"
-                      onClick={() => handleDeleteUser(item.first_name_EN)}
+                      onClick={() => handleDeleteUser(item.id)}
                     >
                       Delete
                     </Menu.Item>

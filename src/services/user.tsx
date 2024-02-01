@@ -111,3 +111,18 @@ export const getUsersPagination = async (page: number, limit: number) => {
     return(err.response.data)
 	}	
 }
+
+export const getUser = async (id: string) => {
+	try {
+		let res = await api.get(`/user/${id}`);
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+		
+	} catch (err: any) {
+		console.log('getUser: ', err);
+    return(err.response)
+	}
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { 
 	Paper, 
 	Box, 
@@ -10,13 +10,26 @@ import {
 	Anchor,
 	Table
 } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { anchorState } from '../../../store/user';
+import { getUser } from '../../../services/user';
+import { IUser } from '../../../types/user.type'
 
 const UserView: React.FC = () => {
 	const [anchor, setAnchor] = useRecoilState(anchorState);
 	const navigate = useNavigate();
+	let { user_id } = useParams();
+	const [data, setData] = useState<IUser | null>(null);
+
+	useEffect(() => {
+		console.log('user_id: ', user_id);
+		if (user_id){
+			getUser(user_id).then((res: IUser) => {
+				setData(res);
+			}).catch(err => console.log(err))
+		}
+	}, [])
 
 	return (
 		<>
@@ -43,11 +56,11 @@ const UserView: React.FC = () => {
 				<Table.Tbody>
 					<Table.Tr key={'username'}>
 						<Table.Td ta="end" fw="bold" c="dimmed">Username : </Table.Td>
-						<Table.Td>Test</Table.Td>
+						<Table.Td>{data?.username}</Table.Td>
 					</Table.Tr>
 					<Table.Tr key={'Email'}>
 						<Table.Td ta="end" fw="bold" c="dimmed">Email : </Table.Td>
-						<Table.Td>Test@email.com</Table.Td>
+						<Table.Td>{data?.email}</Table.Td>
 					</Table.Tr>
 					<Table.Tr key={'password'}>
 						<Table.Td ta="end" fw="bold" c="dimmed">Password : </Table.Td>
@@ -55,11 +68,11 @@ const UserView: React.FC = () => {
 					</Table.Tr>
 					<Table.Tr key={'role'}>
 						<Table.Td ta="end" fw="bold" c="dimmed">Role : </Table.Td>
-						<Table.Td>User</Table.Td>
+						<Table.Td>User (Mock role)</Table.Td>
 					</Table.Tr>
 					<Table.Tr key={'status'}>
 						<Table.Td ta="end" fw="bold" c="dimmed">Status : </Table.Td>
-						<Table.Td>Active</Table.Td>
+						<Table.Td>{data?.status}</Table.Td>
 					</Table.Tr>
 					</Table.Tbody>
 				</Table>

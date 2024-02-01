@@ -49,3 +49,15 @@ export interface IUserList {
     // role: ['user']
     status: string
 }
+
+export interface IUser {
+    id: string
+    username: string
+    password: string
+    password_salt: string
+    email: string
+    is_sso_user: boolean
+    sso_user_id: string | null
+    sso_from: string | null
+    status: string
+}
