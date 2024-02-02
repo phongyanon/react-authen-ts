@@ -46,7 +46,7 @@ export interface IUserList {
     username: string
     email: string
     phone: string
-    // role: ['user']
+    roles: string[]
     status: string
 }
 

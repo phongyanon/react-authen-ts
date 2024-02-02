@@ -89,7 +89,7 @@ const Users: React.FC = () =>{
           <Text fz="sm" fw={400}>{item.email}</Text>
         }
       </Table.Td>
-      {/* <Table.Td>{item.role.join(', ')}</Table.Td> */}
+      <Table.Td>{item.roles.join(', ')}</Table.Td>
       <Table.Td>User</Table.Td>
       <Table.Td width={150}>
         {item.status === 'active' ? (
@@ -307,7 +307,7 @@ const Users: React.FC = () =>{
                 Role
               </Text>
               <Group mt="xs" ml="xs" gap={6}>
-                {['User'].map((r: any) => <Badge key={`${item.id}-${r}`} color="violet" radius="xs" variant="light">{r}</Badge>)}
+                {item.roles.map((r: any) => <Badge key={`${item.id}-${r}`} color="violet" radius="xs" variant="light">{r}</Badge>)}
               </Group>
               <Button variant="default" ml={0} mr={0} mt="md" onClick={() => {
                 setAchor([...anchor, {title: item.username, href: '#'}])
