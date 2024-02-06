@@ -1,7 +1,7 @@
 import axios from "axios";
 import { api, BaseURL, BaseTimeout } from "../utils/axios";
 import { getTokenDecode } from "../utils/token";
-import { ITokenDecode, IUserForm, IProfileForm } from "../types/user.type";
+import { ITokenDecode, IUserForm, IProfileForm, IAddUser } from "../types/user.type";
 
 export const getCurrentUser = async () => {
 	try {
@@ -76,6 +76,25 @@ export const registerUser = async (body :IUserForm) => {
     return(err.response.data)
 	}
 }
+
+export const addUser = async (body :IAddUser) => {
+	try {
+		let res = await api.post('/signup', {
+			username: body.username,
+			email: body.email,
+			password: body.password
+		});
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('addUser: ', err);
+    return(err.response.data)
+	}
+}
+
 
 export const registerProfile = async (body: IProfileForm, access_token: string) => {
 	try {

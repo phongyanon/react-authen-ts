@@ -61,3 +61,19 @@ export interface IUser {
     sso_from: string | null
     status: string
 }
+
+export interface IUserWithRoles extends IUser {
+    roles: string[]
+}
+
+export interface IAddUser {
+    username: string
+    password: string
+    email: string
+    role?: string
+}
+
+export interface ISignUpResp {
+    message: string
+    id: string
+}

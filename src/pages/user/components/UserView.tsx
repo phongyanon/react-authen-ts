@@ -14,19 +14,20 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { anchorState } from '../../../store/user';
 import { getUser } from '../../../services/user';
-import { IUser } from '../../../types/user.type'
+import { getRolesByUserId } from '../../../services/role';
+import { IUserWithRoles } from '../../../types/user.type'
 
 const UserView: React.FC = () => {
 	const [anchor, setAnchor] = useRecoilState(anchorState);
 	const navigate = useNavigate();
 	let { user_id } = useParams();
-	const [data, setData] = useState<IUser | null>(null);
+	const [data, setData] = useState<IUserWithRoles | null>(null);
 
 	useEffect(() => {
-		console.log('user_id: ', user_id);
+		// console.log('user_id: ', user_id);
 		if (user_id){
-			getUser(user_id).then((res: IUser) => {
-				setData(res);
+			Promise.all([getUser(user_id), getRolesByUserId(user_id)]).then((res: any) => {
+				setData({ ...res[0], roles: res[1] });
 			}).catch(err => console.log(err))
 		}
 	}, [])
@@ -68,7 +69,7 @@ const UserView: React.FC = () => {
 					</Table.Tr>
 					<Table.Tr key={'role'}>
 						<Table.Td ta="end" fw="bold" c="dimmed">Role : </Table.Td>
-						<Table.Td>User (Mock role)</Table.Td>
+						<Table.Td>{data?.roles.join(', ')}</Table.Td>
 					</Table.Tr>
 					<Table.Tr key={'status'}>
 						<Table.Td ta="end" fw="bold" c="dimmed">Status : </Table.Td>
