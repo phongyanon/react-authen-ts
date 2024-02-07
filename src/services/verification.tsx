@@ -1,24 +1,24 @@
 import { api } from "../utils/axios";
 
-export const getProfileByUserId = async (id: string) => {
+export const getVerificationByUserId = async (id: string) => {
 	try {
-		let res = await api.get(`/user/profile/${id}`);
+		let res = await api.get(`/user/verification/${id}`);
 
 		if ((res.status === 200) && (res.data)) {
-			return res.data
+			return res.data;
 		} else {
 			return null
 		}
 		
 	} catch (err: any) {
-		console.log('getProfileByUserId: ', err);
+		console.log('getVerificationByUserId: ', err);
     return(err.response.data)
 	}
 }
 
-export const deleteProfile = async (id: string) => {
+export const deleteVerification = async (id: string) => {
 	try {
-		let res = await api.delete(`/profile/${id}`);
+		let res = await api.delete(`/verification/${id}`);
 
 		if ((res.status === 200) && (res.data)) {
 			return res.data;
@@ -27,7 +27,7 @@ export const deleteProfile = async (id: string) => {
 		}
 		
 	} catch (err: any) {
-		console.log('deleteProfile: ', err);
+		console.log('deleteVerification: ', err);
     throw err.response
 	}
 }

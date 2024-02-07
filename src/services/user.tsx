@@ -145,3 +145,19 @@ export const getUser = async (id: string) => {
     return(err.response)
 	}
 }
+
+export const deleteUser = async (id: string) => {
+	try {
+		let res = await api.delete(`/user/${id}`);
+
+		if ((res.status === 200) && (res.data)) {
+			return res.data;
+		} else {
+			throw 'Unsuccessfully'
+		}
+		
+	} catch (err: any) {
+		console.log('deleteUser: ', err);
+    throw err.response
+	}
+}

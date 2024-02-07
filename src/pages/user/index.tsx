@@ -132,7 +132,7 @@ const Users: React.FC = () =>{
   }
 
   useEffect(() => {
-    getUsersPagination(page, 5).then(
+    getUsersPagination(page, 8).then(
       (res) => {
         // console.log('users: ', res)
         if (res.error) console.log(res.err);
@@ -142,7 +142,7 @@ const Users: React.FC = () =>{
         }
       }
     ).catch(err => console.log(err))
-  }, [page]);
+  }, [page, delUserOpened]);
 
   return (
     <>
@@ -341,7 +341,7 @@ const Users: React.FC = () =>{
       <Group justify="center" pt={36}>
         <Pagination value={page} onChange={setPage} total={totalPage}/>
       </Group>
-      <DeleteUserModal opened={delUserOpened} close={delUserHandlers.close} user_id={delUserId}/>
+      <DeleteUserModal opened={delUserOpened} close={delUserHandlers.close} user_id={delUserId} setPage={setPage}/>
     </>
     
   );

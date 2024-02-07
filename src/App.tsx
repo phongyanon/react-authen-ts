@@ -1,6 +1,7 @@
 import { MantineProvider } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 // import theme from "./theme"
 import { RouterProvider } from "react-router-dom";
 import { Router } from "./router";

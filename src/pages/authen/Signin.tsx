@@ -46,7 +46,7 @@ export function Signin() {
   
   const signinSubmit = async (values: ISignin) => {
     // console.log(values);
-    // loaderHandler.toggle();
+    loaderHandler.toggle();
     // setTimeout(() => loaderHandler.close(), 1000);
     let result = await signin({username: values.username, password: values.password});
     if (result.error === 'Invalid username or password') {
