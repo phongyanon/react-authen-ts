@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Avatar, 
   Text, 
@@ -36,6 +36,9 @@ import { useMediaQuery, useDisclosure } from '@mantine/hooks';
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from 'recoil';
 import { anchorState } from '../../store/user';
+import { getProfilesPagination } from '../../services/profile';
+import { IProfile } from '../../types/profile.type';
+import DeleteProfileModal from './components/DeleteProfileModal';
 
 const mockProfiles = [
   {
@@ -94,9 +97,12 @@ const Profiles: React.FC = () =>{
   const [delProfileOpened, delProfileHandlers] = useDisclosure(false);
   const [delProfileId, setDelProfileId] = useState<string>('');
   const navigate = useNavigate();
+  const [totalPage, setTotalPage]  = useState<number>(1);
+  const [page, setPage] = useState<number>(1);
+  const [profileList, setProfileList] = useState<IProfile[]>([]);
 
-  const rows = mockProfiles.map((item) => (
-    <Table.Tr key={`table-${item.id}`}>
+  const rows = profileList.map((item) => (
+    <Table.Tr key={`table-${item.profile_id}`}>
       <Table.Td>
         <Group gap="sm">
           <Avatar size={40} src={item.image_profile} radius={40} />
@@ -113,19 +119,19 @@ const Profiles: React.FC = () =>{
         <Group gap={0} justify="center">
           <ActionIcon variant="subtle" color="gray" onClick={() => {
             setAchor([...anchor, {title: item.first_name_EN, href: '#'}])
-            navigate(`/profiles/${item.id}`)
+            navigate(`/profiles/${item.profile_id}`)
           }}
           >
             <IconEye style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
           <ActionIcon variant="subtle" color="gray" onClick={() => {
             setAchor([...anchor, {title: 'edit', href: '#'}])
-            navigate(`/profiles/${item.id}/edit`)
+            navigate(`/profiles/${item.profile_id}/edit`)
           }}
           >
             <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteProfile(item.id)}>
+          <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteProfile(item.profile_id)}>
             <IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
         </Group>
@@ -137,6 +143,18 @@ const Profiles: React.FC = () =>{
     setDelProfileId(profileId);
     delProfileHandlers.open();
   }
+
+  useEffect(() => {
+    getProfilesPagination(page, 8).then((res) => {
+        // console.log('profiles: ', res)
+        if (res.error) console.log(res.err);
+        else {
+          setTotalPage(res.pagination.total_pages);
+          setProfileList(res.data);
+        }
+      }
+    ).catch(err => console.log(err))
+  }, [page, delProfileOpened]);
 
   return (
     <>
@@ -218,10 +236,10 @@ const Profiles: React.FC = () =>{
       {viewMode === 'card' ? 
       <Grid justify="flex-start" mt={16}>
         {
-          mockProfiles.map((item, index) => (
+          profileList.map((item, index) => (
             <Grid.Col span={{ base: 12, md: 6, lg: 3 }} key={index}>
             <Group justify="center">
-            <Card shadow="sm" padding="lg" radius="md" withBorder w={280} key={`card-${item.id}`}>
+            <Card shadow="sm" padding="lg" radius="md" withBorder w={280} key={`card-${item.profile_id}`}>
               <Group justify="flex-end">
                 <Menu withinPortal position="bottom-end" shadow="sm" width={120}>
                   <Menu.Target>
@@ -234,7 +252,7 @@ const Profiles: React.FC = () =>{
                       leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
                       onClick={() => {
                         setAchor([...anchor, {title: 'edit', href: '#'}]);
-                        navigate(`/profiles/${item.id}/edit`)
+                        navigate(`/profiles/${item.profile_id}/edit`)
                       }}
                     >
                       Edit
@@ -264,7 +282,7 @@ const Profiles: React.FC = () =>{
               </Text>
               <Button variant="default" ml={0} mr={0} mt="md" onClick={() => {
                 setAchor([...anchor, {title: item.first_name_EN, href: '#'}])
-                navigate(`/profiles/${item.id}`)
+                navigate(`/profiles/${item.profile_id}`)
                 }}
               >
                 View
@@ -292,8 +310,9 @@ const Profiles: React.FC = () =>{
       </Table.ScrollContainer>
       }
       <Group justify="center" pt={36}>
-        <Pagination total={10} />
+        <Pagination value={page} onChange={setPage} total={totalPage}/>
       </Group>
+      <DeleteProfileModal opened={delProfileOpened} close={delProfileHandlers.close} profile_id={delProfileId} setPage={setPage}/>
     </>
     
   );

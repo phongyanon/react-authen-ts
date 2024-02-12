@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useState, useEffect } from 'react';
 import { 
 	Paper, 
 	TextInput, 
@@ -7,40 +6,33 @@ import {
 	Group, 
 	Title, 
 	Center, 
-	Button,
-  Text,
-	Container, 
+	Button, 
+	Breadcrumbs, 
 	Anchor,
-	rem,
 	Select,
+	Text,
+	LoadingOverlay,
 	Textarea,
-	Divider,
+	Divider
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
-import { 
-	IconArrowLeft,
-	IconUserPlus
-} from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
-import '@mantine/dates/styles.css';
-import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { userState, registerState } from '../../../store/user';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { notifyAddSuccess, notifyAddFailed, notifyEditSuccess, notifyEditFailed } from '../../../utils/notification';
+import { anchorState, userState } from '../../../store/user';
 import { dateParser } from '../../../utils/date';
-import PolicyModal from '../../../components/policy/Policy';
-import TermsOfUseModal from '../../../components/policy/TermsOfUse';
-import { registerProfile } from '../../../services/user';
 
-export function ProfileForm() {
+const ProfileForm: React.FC = () => {
 	const navigate = useNavigate();
-	const user = useRecoilValue(userState);
-	const getRegisterState = useRecoilValue(registerState);
-	const [otherGenderVisible, setOtherGenderVisible] = useState<boolean>(false);
-	const [policyOpened, policyOpenHandler] = useDisclosure(false);
-	const [loading, loadingHandler] = useDisclosure(false);
-	const [termsOfUseOpened, termsOfUseOpenHandler] = useDisclosure(false);
-	const [errorText, setErrorText] = useState<string | null>(null);
-  const form = useForm({
+	let { profile_id } = useParams();
+	const [userStatus, setUserStatus] = useState(true);
+	const currentUser = useRecoilValue(userState);
+	const [anchor, setAnchor] = useRecoilState(anchorState);
+	const [roleOption, setRoleOption] = useState([]);
+	const [loaderVisible, loaderHandler] = useDisclosure(false);
+	const form = useForm({
     initialValues: {
 			first_name_EN: '',
 			last_name_EN: '',
@@ -61,139 +53,139 @@ export function ProfileForm() {
 		},
   });
 
-	const profileFormHandler = async () => {
-		const storage_token: string | null = localStorage.getItem('access_token');
-		let access_token: string = '';
-		let uid: string = '';
-
-		if (storage_token !== null) access_token = storage_token;
-		else if (getRegisterState?.access_token) access_token = getRegisterState?.access_token;
-		if (user) uid = user.uid;
-		else if (getRegisterState?.uid) uid = getRegisterState?.uid;
-
-		const profile_data = {
-			...form.values, 
-			date_of_birth: parseInt(form.values.date_of_birth.valueOf()) / 1000,
-			zip_code: parseInt(form.values.zip_code),
-			image_profile: '',
-			user_id: uid
-		}
-
-		loadingHandler.toggle();
-		let result = await registerProfile(profile_data, access_token);
-		loadingHandler.close()
-
-		if (result.error){
-			setErrorText(result.error);
+	const handleSubmit = async (formValues: any) => {
+		if (profile_id) {
+			// handleSubmitUpdate();
 		} else {
-			navigate("/register/image/profile");
-		}
+			// handleSubmitAdd();
+		} 
 	}
 
+	const handleSubmitAdd = async () => {
+		
+	}
+
+	const handleSubmitUpdate = async () => {
+		
+	}
+
+	useEffect(() => {
+
+	}, []);
+
 	return (
-		<Container size={860} my={30}>
-			<Center pb={12}><Title order={1}>Profile</Title></Center>
-			<Text c="dimmed" fz="sm" ta="center">
-        Account profile
-      </Text>
-
-			<Paper p={36} mt={16} shadow="md" radius="md" withBorder>
-
-				<form onSubmit={form.onSubmit(() => profileFormHandler())}>
-					<Box maw={340} mx="auto">
-						<TextInput name="first_name_EN" label="First name" placeholder="Firstname" {...form.getInputProps('first_name_EN')} required/>
-						<TextInput name="last_name_EN" mt="md" label="Last name" placeholder="Lastname" {...form.getInputProps('last_name_EN')} required/>
-						<DateInput
-							name="date_of_birth"
-							dateParser={dateParser}
-							mt="md"
-							valueFormat="DD/MM/YYYY"
-							label="Date of birth"
-							placeholder="DD/MM/YYYY"
-							{...form.getInputProps('date_of_birth')}
+		<>
+		<Group justify="space-between" pl={6} pt={16} pb={12}>
+			<Breadcrumbs>
+				{
+					anchor.map((item, index) => (
+						<Anchor key={index} onClick={() => {
+							setAnchor(anchor.slice(0, index+1))
+							navigate(item.href)
+						}}>
+							{item.title}
+						</Anchor>
+						))
+				}
+			</Breadcrumbs>
+		</Group>
+		
+		<Paper p={36} mt={16} shadow="md" radius="md" withBorder>
+				<LoadingOverlay
+          visible={loaderVisible}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+          loaderProps={{ color: 'violet', type: 'bars' }}
+        />
+			<Center pb={12}><Title order={3}>{profile_id === undefined ? 'New Profile': 'Edit Profile'}</Title></Center>
+			<form onSubmit={form.onSubmit(() => {handleSubmit(form.values)})}>
+				<Box maw={340} mx="auto">
+					<Group justify="space-between">
+						<Select
+							w={'100%'}
+							label="User"
+							placeholder="User"
+							name="user_id"
+							data={[
+								{ value: '1', label: 'John Test' },
+								{ value: '2', label: 'Lida Blickpack' },
+								{ value: '3', label: 'Other Oconer' }
+							]}
+							{...form.getInputProps('gender')}
+							defaultValue=''
 							required
-							clearable 
 						/>
-						<Group justify="space-between" mt="lg">
-							<Select
-								w={120}
-								label="Gender"
-								placeholder="Gender"
-								name="gender"
-								data={[
-									{ value: 'male', label: 'Male' },
-									{ value: 'female', label: 'Female' },
-									{ value: 'other', label: 'Other' }
-								]}
-								{...form.getInputProps('gender')}
-								defaultValue=''
-								// onOptionSubmit={(value: any) => {value !== 'other' ? setOtherGenderVisible(false): setOtherGenderVisible(true)}}
-								clearable
-							/>
-							{otherGenderVisible === true ?
-								<></>
-								// <TextInput name="other_gender" label="Other" placeholder="Gender" {...form.getInputProps('other_gender')}/>							
-							: <></>}
-						</Group>
-						<Textarea
-							name="address_EN"
-							placeholder="Address"
-							label="Address"
-							autosize
-							minRows={2}
-							mt="md"
-							{...form.getInputProps('address_EN')}
+					</Group>
+					<TextInput name="first_name_EN" mt="md" label="First name" placeholder="Firstname" {...form.getInputProps('first_name_EN')} required/>
+					<TextInput name="last_name_EN" mt="md" label="Last name" placeholder="Lastname" {...form.getInputProps('last_name_EN')} required/>
+					<DateInput
+						name="date_of_birth"
+						dateParser={dateParser}
+						mt="md"
+						valueFormat="DD/MM/YYYY"
+						label="Date of birth"
+						placeholder="DD/MM/YYYY"
+						{...form.getInputProps('date_of_birth')}
+						required
+						clearable 
+					/>
+					<Group justify="space-between" mt="lg">
+						<Select
+							w={120}
+							label="Gender"
+							placeholder="Gender"
+							name="gender"
+							data={[
+								{ value: 'male', label: 'Male' },
+								{ value: 'female', label: 'Female' },
+								{ value: 'other', label: 'Other' }
+							]}
+							{...form.getInputProps('gender')}
+							defaultValue=''
+							clearable
 						/>
-						<TextInput w={120} mt="md" name="zip_code" label="Zip code" placeholder="Zip code" {...form.getInputProps('zip_code')}/>							
-						<TextInput mt="md" name="phone" label="Phone number" placeholder="Phone number" {...form.getInputProps('phone')}/>							
+					</Group>
+					<Textarea
+						name="address_EN"
+						placeholder="Address"
+						label="Address"
+						autosize
+						minRows={2}
+						mt="md"
+						{...form.getInputProps('address_EN')}
+					/>
+					<TextInput w={120} mt="md" name="zip_code" label="Zip code" placeholder="Zip code" {...form.getInputProps('zip_code')}/>							
+					<TextInput mt="md" name="phone" label="Phone number" placeholder="Phone number" {...form.getInputProps('phone')}/>							
 						
-						<Divider mt="md" my="xs" label="Infomation in thai" labelPosition="center" />
+					<Divider mt="md" my="xs" label="Infomation in thai" labelPosition="center" />
 
-						<TextInput name="first_name_TH" label="First name in thai" placeholder="Firstname in thai" {...form.getInputProps('first_name_TH')}/>
-						<TextInput name="last_name_TH" mt="md" label="Last name in thai" placeholder="Lastname in thai" {...form.getInputProps('last_name_TH')}/>
-						<Textarea
-							name="address_TH"
-							placeholder="Address in thai"
-							label="Address in thai"
-							autosize
-							minRows={2}
-							mt="md"
-							{...form.getInputProps('address_TH')}
-						/>
-						<Text ta="center" mt="xl" c="dimmed" size="xs">
-							By clicking Continue. you agree to {' '}
-							<Text td="underline" span style={{"cursor": "pointer"}} onClick={() => termsOfUseOpenHandler.open()}>Term of Use</Text> {' '}and{' '}
-							<Text td="underline" span style={{"cursor": "pointer"}} onClick={() => policyOpenHandler.open()}>Privacy Policy</Text>.
-							We may send you communications. you may change your preference in your account setting.
-							We'll never post without your permission.
-						</Text>
-						<Group justify="space-around" mt="lg" grow>
-							<Button type="submit" leftSection={<IconUserPlus size={20}/>} loading={loading}>
-								Continue
-							</Button>
-						</Group>
-						{errorText !== null ? 
-							<Group justify="center" p={12} gap={"xs"}>
-								<Text c="red" fz="sm" ta="center">{errorText}</Text>
-							</Group>
-							: <></>}
-						<Group justify="center" p={12} gap={"xs"}>
-							<Text c="dimmed" fz="sm" ta="center">
-								Already have an account then {' '}
-							</Text>
-							<Anchor c="blue" size="sm" onClick={() => navigate(-1)}>
-								<Center inline>
-									<IconArrowLeft style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
-									<Box ml={5}>Back</Box>
-								</Center>
-							</Anchor>
-						</Group>
-					</Box>
-				</form>
+					<TextInput name="first_name_TH" label="First name in thai" placeholder="Firstname in thai" {...form.getInputProps('first_name_TH')}/>
+					<TextInput name="last_name_TH" mt="md" label="Last name in thai" placeholder="Lastname in thai" {...form.getInputProps('last_name_TH')}/>
+					<Textarea
+						name="address_TH"
+						placeholder="Address in thai"
+						label="Address in thai"
+						autosize
+						minRows={2}
+						mt="md"
+						{...form.getInputProps('address_TH')}
+					/>
+					<Group justify="center" mt="xl">
+						<Button type="submit">
+							{profile_id === undefined ? 'Add user': 'Update user'}
+						</Button>
+						<Button variant="outline" onClick={() => {
+							setAnchor([{title: 'User', href: '/users'}])
+							navigate("/users")
+						}}>
+							Cancel
+						</Button>
+					</Group>
+				</Box>
+			</form>
 
-			</Paper>
-			<PolicyModal opened={policyOpened} close={policyOpenHandler.close}/>
-			<TermsOfUseModal opened={termsOfUseOpened} close={termsOfUseOpenHandler.close}/>
-		</Container>
+		</Paper>
+		</>
 	)
 }
+
+export default ProfileForm;
