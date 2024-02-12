@@ -77,3 +77,10 @@ export interface ISignUpResp {
     message: string
     id: string
 }
+
+export interface IUpdateUser {
+    id: string
+    password?: string
+    status: string | boolean
+    role?: string
+}

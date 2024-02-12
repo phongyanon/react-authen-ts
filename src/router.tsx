@@ -9,7 +9,6 @@ import { getCurrentUser, getCurrentProfile } from "./services/user";
 import { getTokenDecode } from "./utils/token";
 import Users from "./pages/user";
 import UserForm from "./pages/user/components/UserForm";
-import EditUserForm from "./pages/user/components/EditUserForm";
 import UserView from "./pages/user/components/UserView";
 import Profiles from "./pages/profile";
 import { Signin } from "./pages/authen/Signin";
@@ -115,7 +114,7 @@ export const Router = () => {
               path: "/users/:user_id/edit",
               element: 
                 <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
-                  <EditUserForm/>
+                  <UserForm/>
                 </ProtectRoute>,
             },
             {

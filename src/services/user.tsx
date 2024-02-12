@@ -1,7 +1,7 @@
 import axios from "axios";
 import { api, BaseURL, BaseTimeout } from "../utils/axios";
 import { getTokenDecode } from "../utils/token";
-import { ITokenDecode, IUserForm, IProfileForm, IAddUser } from "../types/user.type";
+import { ITokenDecode, IUserForm, IProfileForm, IAddUser, IUpdateUser } from "../types/user.type";
 
 export const getCurrentUser = async () => {
 	try {
@@ -91,6 +91,20 @@ export const addUser = async (body :IAddUser) => {
 		}
 	} catch (err: any) {
 		console.log('addUser: ', err);
+    return(err.response.data)
+	}
+}
+
+export const updateUser = async (body :IUpdateUser) => {
+	try {
+		let res = await api.put(`/user/${body.id}`, body);
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('updateUser: ', err);
     return(err.response.data)
 	}
 }
