@@ -118,7 +118,7 @@ const Profiles: React.FC = () =>{
       <Table.Td>
         <Group gap={0} justify="center">
           <ActionIcon variant="subtle" color="gray" onClick={() => {
-            setAchor([...anchor, {title: item.first_name_EN, href: '#'}])
+            setAchor([...anchor, {title: `${item.first_name_EN}  ${item.last_name_EN}`, href: '#'}])
             navigate(`/profiles/${item.profile_id}`)
           }}
           >
@@ -260,7 +260,7 @@ const Profiles: React.FC = () =>{
                     <Menu.Item
                       leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
                       color="red"
-                      onClick={() => handleDeleteProfile(item.first_name_EN)}
+                      onClick={() => handleDeleteProfile(item.profile_id)}
                     >
                       Delete
                     </Menu.Item>
@@ -281,7 +281,7 @@ const Profiles: React.FC = () =>{
                 {item.phone}
               </Text>
               <Button variant="default" ml={0} mr={0} mt="md" onClick={() => {
-                setAchor([...anchor, {title: item.first_name_EN, href: '#'}])
+                setAchor([...anchor, {title: `${item.first_name_EN}  ${item.last_name_EN}`, href: '#'}])
                 navigate(`/profiles/${item.profile_id}`)
                 }}
               >

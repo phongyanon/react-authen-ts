@@ -23,24 +23,26 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { notifyAddSuccess, notifyAddFailed, notifyEditSuccess, notifyEditFailed } from '../../../utils/notification';
 import { anchorState, userState } from '../../../store/user';
 import { dateParser } from '../../../utils/date';
+import { getUsers } from '../../../services/user';
+import { getProfile, addProfile, updateProfile } from '../../../services/profile';
+import { IAddProfile, IUpdateProfile } from '../../../types/profile.type';
 
 const ProfileForm: React.FC = () => {
 	const navigate = useNavigate();
 	let { profile_id } = useParams();
-	const [userStatus, setUserStatus] = useState(true);
 	const currentUser = useRecoilValue(userState);
 	const [anchor, setAnchor] = useRecoilState(anchorState);
-	const [roleOption, setRoleOption] = useState([]);
-	const [loaderVisible, loaderHandler] = useDisclosure(false);
+	const [userOption, setUserOption] = useState([]);
+	const [loading, loadingHandler] = useDisclosure(false);
 	const form = useForm({
     initialValues: {
+			user_id: '',
 			first_name_EN: '',
 			last_name_EN: '',
 			first_name_TH: '',
 			last_name_TH: '',
 			date_of_birth: '',
 			gender: '',
-			// other_gender: '',
 			address_EN: '',
 			address_TH: '',
 			zip_code: '',
@@ -53,24 +55,69 @@ const ProfileForm: React.FC = () => {
 		},
   });
 
-	const handleSubmit = async (formValues: any) => {
+	const handleSubmit = async () => {
+		const profile_data = {
+			...form.values, 
+			date_of_birth: parseInt(form.values.date_of_birth.valueOf()) / 1000,
+			zip_code: parseInt(form.values.zip_code),
+			image_profile: ''
+		}
 		if (profile_id) {
-			// handleSubmitUpdate();
+			handleSubmitUpdate(profile_data as IUpdateProfile);
 		} else {
-			// handleSubmitAdd();
+			handleSubmitAdd(profile_data as IAddProfile);
 		} 
 	}
 
-	const handleSubmitAdd = async () => {
+	const handleSubmitAdd = async (data: IAddProfile) => {
+		loadingHandler.toggle();
+		try {
+			let result = await addProfile(data);
+			if (result === false) throw 'Unsuccessfully addProfile';
+
+			notifyAddSuccess();
+			loadingHandler.close();
+			setAnchor([{title: 'Profile', href: '/profiles'}]);
+			navigate("/profiles");
+
+		} catch (err) {
+			loadingHandler.close();
+			notifyAddFailed();
+			console.log(err);
+		}
 		
 	}
 
-	const handleSubmitUpdate = async () => {
-		
+	const handleSubmitUpdate = async (data: IUpdateProfile) => {
+		console.log('update:', data)
+		loadingHandler.toggle();
+		try {
+			let result = await updateProfile(data);
+			if (result === false) throw 'Unsuccessfully updateProfile';
+
+			notifyEditSuccess();
+			loadingHandler.close();
+			setAnchor([{title: 'Profile', href: '/profiles'}]);
+			navigate("/profiles");
+
+		} catch (err) {
+			loadingHandler.close();
+			notifyEditFailed();
+			console.log(err);
+		}
 	}
 
 	useEffect(() => {
+		getUsers().then((res: any) => {
+			let options = res.map((obj: any) => ({value: obj.id.toString(), label: obj.username}));
+			setUserOption(options);
+		}).catch(err => console.log(err));
 
+		if (profile_id) {
+			getProfile(profile_id).then((res: any) => {
+				console.log('res: ', res);
+			})
+		}
 	}, []);
 
 	return (
@@ -92,12 +139,13 @@ const ProfileForm: React.FC = () => {
 		
 		<Paper p={36} mt={16} shadow="md" radius="md" withBorder>
 				<LoadingOverlay
-          visible={loaderVisible}
+          visible={loading}
           overlayProps={{ radius: 'sm', blur: 2 }}
           loaderProps={{ color: 'violet', type: 'bars' }}
+					pos={"fixed"}
         />
 			<Center pb={12}><Title order={3}>{profile_id === undefined ? 'New Profile': 'Edit Profile'}</Title></Center>
-			<form onSubmit={form.onSubmit(() => {handleSubmit(form.values)})}>
+			<form onSubmit={form.onSubmit(() => {handleSubmit()})}>
 				<Box maw={340} mx="auto">
 					<Group justify="space-between">
 						<Select
@@ -105,12 +153,8 @@ const ProfileForm: React.FC = () => {
 							label="User"
 							placeholder="User"
 							name="user_id"
-							data={[
-								{ value: '1', label: 'John Test' },
-								{ value: '2', label: 'Lida Blickpack' },
-								{ value: '3', label: 'Other Oconer' }
-							]}
-							{...form.getInputProps('gender')}
+							data={userOption}
+							{...form.getInputProps('user_id')}
 							defaultValue=''
 							required
 						/>
@@ -171,11 +215,11 @@ const ProfileForm: React.FC = () => {
 					/>
 					<Group justify="center" mt="xl">
 						<Button type="submit">
-							{profile_id === undefined ? 'Add user': 'Update user'}
+							{profile_id === undefined ? 'Add profile': 'Update profile'}
 						</Button>
 						<Button variant="outline" onClick={() => {
-							setAnchor([{title: 'User', href: '/users'}])
-							navigate("/users")
+							setAnchor([{title: 'Profile', href: '/profiles'}])
+							navigate("/profiles")
 						}}>
 							Cancel
 						</Button>
