@@ -19,6 +19,7 @@ import { RegisterProfileForm } from "./pages/profile/components/RegisterProfileF
 import ProfileForm from "./pages/profile/components/ProfileForm";
 import { ImageProfile } from "./pages/profile/components/ImageProfile";
 import { EditImageProfile } from "./pages/profile/components/EditImageProfile";
+import Verifications from "./pages/verification";
 import { NewPassword } from "./pages/authen/NewPassword";
 import Overview from "./pages/overview";
 import { LandingPage } from "./components/landing/landing";
@@ -153,6 +154,13 @@ export const Router = () => {
               element: 
                 <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
                   <EditImageProfile/>
+                </ProtectRoute>,
+            },
+            {
+              path: "/verifications",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <Verifications/>
                 </ProtectRoute>,
             },
             {
