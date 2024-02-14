@@ -30,5 +30,5 @@ export interface IAddProfile {
 }
 
 export interface IUpdateProfile extends IAddProfile {
-	profile_id: string
+	profile_id: string | undefined
 }

@@ -18,6 +18,7 @@ import { Register } from "./pages/authen/Register";
 import { RegisterProfileForm } from "./pages/profile/components/RegisterProfileForm";
 import ProfileForm from "./pages/profile/components/ProfileForm";
 import { ImageProfile } from "./pages/profile/components/ImageProfile";
+import { EditImageProfile } from "./pages/profile/components/EditImageProfile";
 import { NewPassword } from "./pages/authen/NewPassword";
 import Overview from "./pages/overview";
 import { LandingPage } from "./components/landing/landing";
@@ -145,6 +146,13 @@ export const Router = () => {
               element: 
                 <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
                   <ProfileView/>
+                </ProtectRoute>,
+            },
+            {
+              path: "profiles/:profile_id/image",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <EditImageProfile/>
                 </ProtectRoute>,
             },
             {

@@ -10,7 +10,7 @@ import {
 	Breadcrumbs, 
 	Anchor,
 	Select,
-	Text,
+	// Text,
 	LoadingOverlay,
 	Textarea,
 	Divider
@@ -19,9 +19,9 @@ import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { notifyAddSuccess, notifyAddFailed, notifyEditSuccess, notifyEditFailed } from '../../../utils/notification';
-import { anchorState, userState } from '../../../store/user';
+import { anchorState } from '../../../store/user';
 import { dateParser } from '../../../utils/date';
 import { getUsers } from '../../../services/user';
 import { getProfile, addProfile, updateProfile } from '../../../services/profile';
@@ -29,8 +29,8 @@ import { IAddProfile, IUpdateProfile } from '../../../types/profile.type';
 
 const ProfileForm: React.FC = () => {
 	const navigate = useNavigate();
-	let { profile_id } = useParams();
-	const currentUser = useRecoilValue(userState);
+	const { profile_id } = useParams();
+	// const currentUser = useRecoilValue(userState);
 	const [anchor, setAnchor] = useRecoilState(anchorState);
 	const [userOption, setUserOption] = useState([]);
 	const [loading, loadingHandler] = useDisclosure(false);
@@ -59,8 +59,7 @@ const ProfileForm: React.FC = () => {
 		const profile_data = {
 			...form.values, 
 			date_of_birth: parseInt(form.values.date_of_birth.valueOf()) / 1000,
-			zip_code: parseInt(form.values.zip_code),
-			image_profile: ''
+			zip_code: parseInt(form.values.zip_code)
 		}
 		if (profile_id) {
 			handleSubmitUpdate(profile_data as IUpdateProfile);
@@ -72,7 +71,7 @@ const ProfileForm: React.FC = () => {
 	const handleSubmitAdd = async (data: IAddProfile) => {
 		loadingHandler.toggle();
 		try {
-			let result = await addProfile(data);
+			let result = await addProfile({...data, image_profile: ''});
 			if (result === false) throw 'Unsuccessfully addProfile';
 
 			notifyAddSuccess();
@@ -89,10 +88,10 @@ const ProfileForm: React.FC = () => {
 	}
 
 	const handleSubmitUpdate = async (data: IUpdateProfile) => {
-		console.log('update:', data)
 		loadingHandler.toggle();
 		try {
-			let result = await updateProfile(data);
+			console.log('data: ', data)
+			let result = await updateProfile({...data, profile_id: profile_id});
 			if (result === false) throw 'Unsuccessfully updateProfile';
 
 			notifyEditSuccess();
@@ -115,7 +114,20 @@ const ProfileForm: React.FC = () => {
 
 		if (profile_id) {
 			getProfile(profile_id).then((res: any) => {
-				console.log('res: ', res);
+				let dateOfBirth = new Date(res.date_of_birth * 1000);
+				form.setValues({
+					user_id: res.user_id,
+					first_name_EN: res.first_name_EN,
+					last_name_EN: res.last_name_EN,
+					first_name_TH: res.first_name_TH,
+					last_name_TH: res.last_name_TH,
+					date_of_birth: dateOfBirth as any,
+					gender: res.gender,
+					address_EN: res.address_EN,
+					address_TH: res.address_TH,
+					phone: res.phone,
+					zip_code: res.zip_code,
+				})
 			})
 		}
 	}, []);
@@ -170,7 +182,7 @@ const ProfileForm: React.FC = () => {
 						placeholder="DD/MM/YYYY"
 						{...form.getInputProps('date_of_birth')}
 						required
-						clearable 
+						clearable
 					/>
 					<Group justify="space-between" mt="lg">
 						<Select

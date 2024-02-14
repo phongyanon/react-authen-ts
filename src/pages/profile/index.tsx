@@ -17,13 +17,13 @@ import {
   Popover,
   Pagination,
   Table,
-  Badge
+  // FileButton
 } from '@mantine/core';
 import { 
   IconEdit, 
   IconTrash,
   IconDots,
-  // IconList,
+  IconUserEdit,
   IconTable,
   IconLayoutGrid,
   IconCirclePlus,
@@ -39,54 +39,6 @@ import { anchorState } from '../../store/user';
 import { getProfilesPagination } from '../../services/profile';
 import { IProfile } from '../../types/profile.type';
 import DeleteProfileModal from './components/DeleteProfileModal';
-
-const mockProfiles = [
-  {
-    id: '1',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png",
-    first_name_EN: "Jane",
-    last_name_EN: "Fingerlicker",
-    phone: "+6699 9995555",
-		date_of_birth: "11/9/1990",
-    gender: 'female'
-  },
-  {
-    id: '2',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-7.png",
-    first_name_EN: "Pink",
-    last_name_EN: "Hotlicker",
-    phone: "+6693 9991111",
-    date_of_birth: "16/1/1990",
-    gender: 'female'
-  },
-  {
-    id: '3',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-6.png",
-    first_name_EN: "Elsa",
-    last_name_EN: "Alivelicker",
-    phone: "+6693 9992345",
-		date_of_birth: "16/11/1992",
-    gender: 'female'
-  },
-  {
-    id: '4',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png",
-    first_name_EN: "Blone",
-    last_name_EN: "Shortlicker",
-    phone: "+6692 2222345",
-		date_of_birth: "9/6/1994",
-    gender: 'female'
-  },
-  {
-    id: '5',
-    image_profile: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-4.png",
-    first_name_EN: "Sita",
-    last_name_EN: "Shortlicker",
-    phone: "+6682 9002345",
-		date_of_birth: "30/12/1998",
-    gender: 'female'
-  },
-]
 
 const Profiles: React.FC = () =>{
   const [anchor, setAchor] = useRecoilState(anchorState);
@@ -241,7 +193,7 @@ const Profiles: React.FC = () =>{
             <Group justify="center">
             <Card shadow="sm" padding="lg" radius="md" withBorder w={280} key={`card-${item.profile_id}`}>
               <Group justify="flex-end">
-                <Menu withinPortal position="bottom-end" shadow="sm" width={120}>
+                <Menu withinPortal position="bottom-end" shadow="sm" width={140}>
                   <Menu.Target>
                     <ActionIcon variant="subtle" color="gray">
                       <IconDots style={{ width: rem(16), height: rem(16) }} />
@@ -255,7 +207,15 @@ const Profiles: React.FC = () =>{
                         navigate(`/profiles/${item.profile_id}/edit`)
                       }}
                     >
-                      Edit
+                      Edit info
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<IconUserEdit style={{ width: rem(14), height: rem(14) }} />}
+                      onClick={() => {
+                        navigate(`/profiles/${item.profile_id}/image`)
+                      }}
+                    >
+                      Edit image
                     </Menu.Item>
                     <Menu.Item
                       leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
