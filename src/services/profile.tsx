@@ -86,7 +86,7 @@ export const getProfilesPagination = async (page: number, limit: number) => {
 			return false;
 		}
 	} catch (err: any) {
-		console.log('updateForgotPassword: ', err);
+		console.log('getProfilesPagination: ', err);
     return(err.response.data)
 	}	
 }

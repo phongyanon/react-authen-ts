@@ -20,6 +20,8 @@ import ProfileForm from "./pages/profile/components/ProfileForm";
 import { ImageProfile } from "./pages/profile/components/ImageProfile";
 import { EditImageProfile } from "./pages/profile/components/EditImageProfile";
 import Verifications from "./pages/verification";
+import VerificationForm from "./pages/verification/components/VerificationForm";
+import VerificationView from "./pages/verification/components/VerificationView";
 import { NewPassword } from "./pages/authen/NewPassword";
 import Overview from "./pages/overview";
 import { LandingPage } from "./components/landing/landing";
@@ -161,6 +163,27 @@ export const Router = () => {
               element: 
                 <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
                   <Verifications/>
+                </ProtectRoute>,
+            },
+            {
+              path: "verifications/:record_id",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <VerificationView/>
+                </ProtectRoute>,
+            },
+            {
+              path: "/verifications/new",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <VerificationForm/>
+                </ProtectRoute>,
+            },
+            {
+              path: "/verifications/:record_id/edit",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <VerificationForm/>
                 </ProtectRoute>,
             },
             {

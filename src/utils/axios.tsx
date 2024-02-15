@@ -4,7 +4,8 @@ const BaseURL: string = `${import.meta.env.VITE_API_URL}/${import.meta.env.VITE_
 const BaseTimeout: number = 5000
 const api = axios.create({
   baseURL: BaseURL,
-  timeout: BaseTimeout
+  timeout: BaseTimeout,
+  timeoutErrorMessage: "Request timed out. Please try again later.",
 });
 
 api.interceptors.request.use(function (request: InternalAxiosRequestConfig) {

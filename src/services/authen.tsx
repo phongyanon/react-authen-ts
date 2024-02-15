@@ -11,7 +11,7 @@ export const signin = async (body: ISignin) => {
 		}
 	} catch (err: any) {
 		console.log('signin err: ', err);
-    return(err.response.data)
+    throw(err.response.data)
 	}
 }
 

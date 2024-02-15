@@ -4,7 +4,7 @@ import {
   Paper,
   TextInput,
   PasswordInput,
-  Checkbox,
+  // Checkbox,
   Button,
   Title,
   Text,
@@ -30,11 +30,11 @@ import { IUserInfo } from '../../types/user.type';
 import { userState } from '../../store/user';
 
 export function Signin() {
-  const [currentUser, setCurrentUser] = useRecoilState(userState);
+  const [_, setCurrentUser] = useRecoilState(userState);
   const [policyOpened, policyOpenHandler] = useDisclosure(false);
 	const [termsOfUseOpened, termsOfUseOpenHandler] = useDisclosure(false);
   const [loaderVisible, loaderHandler ] = useDisclosure(false);
-  const [formError, setFormError] = useState<boolean>(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const form = useForm({
@@ -47,25 +47,35 @@ export function Signin() {
   const signinSubmit = async (values: ISignin) => {
     // console.log(values);
     loaderHandler.toggle();
-    // setTimeout(() => loaderHandler.close(), 1000);
-    let result = await signin({username: values.username, password: values.password});
-    if (result.error === 'Invalid username or password') {
-      setFormError(true);
-    } else {
-      localStorage.setItem('access_token', result.access_token);
-      localStorage.setItem('refresh_token', result.refresh_token);
+    try {
+      let result = await signin({username: values.username, password: values.password});
+      if (result === false) {
+        setFormError("Invalid username or password");
+      } else {
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('refresh_token', result.refresh_token);
 
-      Promise.all([getCurrentUser(), getCurrentProfile()]).then((values) => {
-        if ((values[0] !== null) && (values[1].image_profile)) {
-          let user_info: IUserInfo = values[0];
-          user_info.image_profile = values[1].image_profile;
-          setCurrentUser(user_info);
-        }
-        else if (values[0] !== null) {
-          setCurrentUser(values[0]);
-        }
-      });
-      navigate("/overview");
+        Promise.all([getCurrentUser(), getCurrentProfile()]).then((values) => {
+          if ((values[0] !== null) && (values[1].image_profile)) {
+            let user_info: IUserInfo = values[0];
+            user_info.image_profile = values[1].image_profile;
+            setCurrentUser(user_info);
+          }
+          else if (values[0] !== null) {
+            setCurrentUser(values[0]);
+          }
+        });
+        loaderHandler.close();
+        navigate("/overview");
+      }
+    } catch (err: any) {
+      if (err.error === 'Invalid username or password') {
+        setFormError("Invalid username or password");
+      } else {
+        setFormError("Server is under matainance, Please contact admin");
+      }
+      loaderHandler.close();
+      console.log(err);
     }
   }
 
@@ -92,10 +102,10 @@ export function Signin() {
         <form onSubmit={form.onSubmit((values) => signinSubmit(values))}>
           <TextInput 
             label="Email address" 
-            placeholder="hello@gmail.com" 
+            placeholder="hello@email.com" 
             {...form.getInputProps('username')} 
             size="md"
-            error={formError}
+            error={formError !== null}
           />
           <PasswordInput 
             label="Password" 
@@ -103,7 +113,7 @@ export function Signin() {
             {...form.getInputProps('password')} 
             mt="md" 
             size="md" 
-            error={formError ? "Invalid username or password": formError}
+            error={formError}
           />
           <Button fullWidth mt="xl" size="md" type='submit'>
             Sign in

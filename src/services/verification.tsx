@@ -49,6 +49,20 @@ export const getVerification = async (id: string) => {
 	}
 }
 
+export const getVerificationsPagination = async (page: number, limit: number) => {
+	try {
+		let res = await api.get(`/pagination/verifications`, { params: { page: page, limit: limit } });
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('getVerificationsPagination: ', err);
+    throw(err.response.data)
+	}	
+}
+
 export const addVerification = async (body: IAddVerification) => {
 	try {
 		let res = await api.post(`/verification`, body);
@@ -66,7 +80,7 @@ export const addVerification = async (body: IAddVerification) => {
 export const updateVerification = async (body: IUpdateVerification) => {
 	try {
 		let res = await api.put(`/verification/${body.id}`, body);
-    if ((res.status === 201) && res.data) {
+    if ((res.status === 200) && res.data) {
 			return res.data;
 		} else {
 			return false;

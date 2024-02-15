@@ -2,43 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { 
   Text, 
   Button, 
-  Card, 
   Group, 
   Menu, 
   ActionIcon, 
   rem, 
   Breadcrumbs, 
   Anchor,
-  Tooltip,
   Checkbox,
   ThemeIcon,
   TextInput,
   Popover,
   Pagination,
   Table,
-  Badge
 } from '@mantine/core';
 import { 
   IconEdit, 
   IconTrash,
-  IconDots,
-  // IconList,
-  IconTable,
-  IconLayoutGrid,
   IconCirclePlus,
   IconSearch,
   IconAdjustments,
   IconPencil,
-  IconEye
+  IconEye,
+	IconCheck, 
+	IconX, 
+	IconDotsVertical
 } from '@tabler/icons-react';
 import { useMediaQuery, useDisclosure } from '@mantine/hooks';
-import { IconCheck, IconX } from '@tabler/icons-react';
-import { getUsersPagination } from '../../services/user';
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from 'recoil';
 import { anchorState } from '../../store/user';
-import { getVerifications } from '../../services/verification';
-import { IAddVerification, IVerificationWithUser } from '../../types/verification.type';
+import DeleteVerificationModal from './components/DeleteVerificationModal';
+import { getVerificationsPagination } from '../../services/verification';
+import { IVerificationWithUser } from '../../types/verification.type';
 
 const Verifications: React.FC = () =>{
   const [anchor, setAchor] = useRecoilState(anchorState);
@@ -54,7 +49,43 @@ const Verifications: React.FC = () =>{
   const rows = dataList.map((item) => (
     <Table.Tr key={`table-${item.id}`}>
       <Table.Td>
-        {item.user_id.toString()}
+				<Group align='center'>
+				<Menu withinPortal position="bottom-start" shadow="sm" width={120}>
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="indigo">
+              <IconDotsVertical style={{ width: rem(16), height: rem(16) }} />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+						<Menu.Item
+              leftSection={<IconEye style={{ width: rem(14), height: rem(14) }} />}
+              onClick={() => {
+                setAchor([...anchor, {title: 'edit', href: '#'}]);
+                navigate(`/verifications/${item.id}`)
+              }}
+            >
+              View
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
+              onClick={() => {
+                setAchor([...anchor, {title: 'edit', href: '#'}]);
+                navigate(`/verifications/${item.id}/edit`)
+              }}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
+              color="red"
+              onClick={() => handleDeleteItem(item.id)}
+            >
+              Delete
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+				<Text>{item.username}</Text>
+				</Group>
       </Table.Td>
       <Table.Td ta={'center'}>
 				{item.email_verified ? 
@@ -92,7 +123,7 @@ const Verifications: React.FC = () =>{
       <Table.Td>
         <Group gap={0} justify="center">
           <ActionIcon variant="subtle" color="gray" onClick={() => {
-            setAchor([...anchor, {title: item.id, href: '#'}])
+            setAchor([...anchor, {title: 'view', href: '#'}])
             navigate(`/verifications/${item.id}`)
           }}
           >
@@ -119,10 +150,11 @@ const Verifications: React.FC = () =>{
   }
 
   useEffect(() => {
-    getVerifications().then((res: any) => {
-      setDataList(res);
+    getVerificationsPagination(page, 10).then((res: any) => {
+      setDataList(res.data);
+      setTotalPage(res.pagination.total_pages);
 		}).catch(err => console.log(err))
-  }, [delUserOpened]);
+  }, [page, delUserOpened]);
 
   return (
     <>
@@ -194,15 +226,17 @@ const Verifications: React.FC = () =>{
             <Table.Tr>
               <Table.Th>User</Table.Th>
               <Table.Th ta={'center'}>Email verified</Table.Th>
-              <Table.Th ta={'center'}>Enable opt</Table.Th>
-              <Table.Th ta={'center'}>Otp verified</Table.Th>
+              <Table.Th ta={'center'}>Enable OTP</Table.Th>
+              <Table.Th ta={'center'}>OTP verified</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{rows}</Table.Tbody>
         </Table>
       </Table.ScrollContainer>
-      
-      {/* <DeleteUserModal opened={delUserOpened} close={delUserHandlers.close} user_id={delDataId} setPage={setPage}/> */}
+      <Group justify="center" pt={36}>
+        <Pagination value={page} onChange={setPage} total={totalPage}/>
+      </Group>
+      <DeleteVerificationModal opened={delUserOpened} close={delUserHandlers.close} record_id={delDataId} setPage={setPage}/>
     </>
     
   );
