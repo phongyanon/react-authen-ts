@@ -24,6 +24,8 @@ import VerificationForm from "./pages/verification/components/VerificationForm";
 import VerificationView from "./pages/verification/components/VerificationView";
 import Tokens from "./pages/token";
 import Setting from "./pages/setting";
+import Document from "./pages/document";
+import Contact from "./pages/contact";
 import { NewPassword } from "./pages/authen/NewPassword";
 import Overview from "./pages/overview";
 import { LandingPage } from "./components/landing/landing";
@@ -200,6 +202,20 @@ export const Router = () => {
               element: 
                 <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin']}>
                   <Setting/>
+                </ProtectRoute>,
+            },
+            {
+              path: "/document",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <Document/>
+                </ProtectRoute>,
+            },
+            {
+              path: "/contact",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <Contact/>
                 </ProtectRoute>,
             },
           ]

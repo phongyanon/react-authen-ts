@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useState, useEffect } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { 
   IconUser, 
   IconClipboardText, 
@@ -13,17 +13,17 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Box, NavLink, Text } from '@mantine/core';
-import { anchorState } from '../../store/user';
+import { anchorState, userState } from '../../store/user';
 
 const nav_links = [
   { text: 'Navigation'},
-  { label: 'Overview', leftSection: <IconHome size="1rem" stroke={1.5} />, path: "/overview" },
-  { label: 'User', leftSection: <IconUser size="1rem" stroke={1.5} />, path: "/users" },
-  { label: 'Profile', leftSection: <IconClipboardText size="1rem" stroke={1.5} />, path: "/profiles" },
-  { label: 'Verification', leftSection: <IconClipboardCheck size="1rem" stroke={1.5} />, path: "/verifications" },
-  { label: 'Token', leftSection: <IconKey size="1rem" stroke={1.5} />, path: "/tokens"},
-  { text: 'Config'},
-  { label: 'Setting', leftSection: <IconSettings size="1rem" stroke={1.5} />, path: "/setting" },
+  { label: 'Overview', leftSection: <IconHome size="1rem" stroke={1.5} />, path: "/overview", roles: ['SuperAdmin', 'Admin', 'User'] },
+  { label: 'User', leftSection: <IconUser size="1rem" stroke={1.5} />, path: "/users", roles: ['SuperAdmin', 'Admin'] },
+  { label: 'Profile', leftSection: <IconClipboardText size="1rem" stroke={1.5} />, path: "/profiles", roles: ['SuperAdmin', 'Admin'] },
+  { label: 'Verification', leftSection: <IconClipboardCheck size="1rem" stroke={1.5} />, path: "/verifications", roles: ['SuperAdmin', 'Admin'] },
+  { label: 'Token', leftSection: <IconKey size="1rem" stroke={1.5} />, path: "/tokens", roles: ['SuperAdmin', 'Admin']},
+  { text: 'Config', roles: ['SuperAdmin', 'Admin']},
+  { label: 'Setting', leftSection: <IconSettings size="1rem" stroke={1.5} />, path: "/setting", roles: ['SuperAdmin', 'Admin'] },
   // { label: 'Theme', leftSection: <IconPalette size="1rem" stroke={1.5} />, path: "/theme" },
   { text: 'Support'},
   { label: 'Document', leftSection: <IconBook size="1rem" stroke={1.5} />, path: "/document" },
@@ -33,9 +33,23 @@ const nav_links = [
 export function Navbar() {
   const [active, setActive] = useState(0);
   const [_, setAchor] = useRecoilState(anchorState);
+  const user = useRecoilValue(userState);
   const navigate = useNavigate();
 
   const nav_items = nav_links.map((item, index) => {
+    if (item.roles) {
+      let hasPermission: boolean = false;
+      item.roles.forEach((role: string) => {
+        if (user) {
+          if (user.roles.includes(role)) hasPermission = true;
+        }
+      });
+
+      if (hasPermission === false) {
+        return <></>
+      }
+    }
+
     if (item.hasOwnProperty('text')) {
       return(
         <Text size="xs" p="xs" c="dimmed" key={item.text}>{item.text}</Text>
@@ -59,6 +73,10 @@ export function Navbar() {
       )
     }
   });
+
+  useEffect(() => {
+    console.log('Nav: ', user);
+  }, [])
 
   return(
     <Box w={300}>
