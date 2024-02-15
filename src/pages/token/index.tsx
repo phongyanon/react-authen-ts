@@ -9,33 +9,27 @@ import {
   Breadcrumbs, 
   Anchor,
   Checkbox,
-  ThemeIcon,
   TextInput,
   Popover,
   Pagination,
   Table,
 } from '@mantine/core';
 import { 
-  IconEdit, 
   IconTrash,
-  IconCirclePlus,
   IconSearch,
   IconAdjustments,
-  IconPencil,
-  IconEye,
-	IconCheck, 
-	IconX, 
 	IconDotsVertical
 } from '@tabler/icons-react';
 import { useMediaQuery, useDisclosure } from '@mantine/hooks';
 import { useNavigate } from "react-router-dom";
+import moment from 'moment';
 import { useRecoilState } from 'recoil';
 import { anchorState } from '../../store/user';
-import DeleteVerificationModal from './components/DeleteVerificationModal';
-import { getVerificationsPagination } from '../../services/verification';
-import { IVerificationWithUser } from '../../types/verification.type';
+import DeleteTokenModal from './components/DeleteTokenModal';
+import { getTokensPagination } from '../../services/token';
+import { ITokenWithUser } from '../../types/token.type';
 
-const Verifications: React.FC = () =>{
+const Tokens: React.FC = () =>{
   const [anchor, setAchor] = useRecoilState(anchorState);
   const isTablet = useMediaQuery(`(max-width: ${rem(790)})`);
   const [filterOpened, setFilterOpened] = useState(false);
@@ -44,7 +38,7 @@ const Verifications: React.FC = () =>{
   const navigate = useNavigate();
   const [totalPage, setTotalPage]  = useState<number>(1);
   const [page, setPage] = useState<number>(1);
-  const [dataList, setDataList] = useState<IVerificationWithUser[]>([]);
+  const [dataList, setDataList] = useState<ITokenWithUser[]>([]);
 
   const rows = dataList.map((item) => (
     <Table.Tr key={`table-${item.id}`}>
@@ -57,24 +51,6 @@ const Verifications: React.FC = () =>{
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
-						<Menu.Item
-              leftSection={<IconEye style={{ width: rem(14), height: rem(14) }} />}
-              onClick={() => {
-                setAchor([...anchor, {title: 'edit', href: '#'}]);
-                navigate(`/verifications/${item.id}`)
-              }}
-            >
-              View
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
-              onClick={() => {
-                setAchor([...anchor, {title: 'edit', href: '#'}]);
-                navigate(`/verifications/${item.id}/edit`)
-              }}
-            >
-              Edit
-            </Menu.Item>
             <Menu.Item
               leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
               color="red"
@@ -88,54 +64,13 @@ const Verifications: React.FC = () =>{
 				</Group>
       </Table.Td>
       <Table.Td ta={'center'}>
-				{item.email_verified ? 
-					<ThemeIcon variant="light" radius="xl" color="teal">
-						<IconCheck style={{ width: '70%', height: '70%' }} />
-					</ThemeIcon>
-				:
-				<ThemeIcon variant="light" radius="xl" color="red">
-					<IconX style={{ width: '70%', height: '70%' }} />
-				</ThemeIcon>
-				}
+				{moment(item.create_at).format('DD/MM/YYYY, hh:mm:ss')}
       </Table.Td>
-			<Table.Td ta={'center'}>
-				{item.enable_opt ? 
-					<ThemeIcon variant="light" radius="xl" color="teal">
-						<IconCheck style={{ width: '70%', height: '70%' }} />
-					</ThemeIcon>
-				:
-				<ThemeIcon variant="light" radius="xl" color="red">
-					<IconX style={{ width: '70%', height: '70%' }} />
-				</ThemeIcon>
-				}
-      </Table.Td>
-			<Table.Td ta={'center'}>
-				{item.otp_verified ? 
-					<ThemeIcon variant="light" radius="xl" color="teal">
-						<IconCheck style={{ width: '70%', height: '70%' }} />
-					</ThemeIcon>
-				:
-				<ThemeIcon variant="light" radius="xl" color="red">
-					<IconX style={{ width: '70%', height: '70%' }} />
-				</ThemeIcon>
-				}
+      <Table.Td ta={'center'}>
+				{item.description}
       </Table.Td>
       <Table.Td>
         <Group gap={0} justify="center">
-          <ActionIcon variant="subtle" color="gray" onClick={() => {
-            setAchor([...anchor, {title: 'view', href: '#'}])
-            navigate(`/verifications/${item.id}`)
-          }}
-          >
-            <IconEye style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon variant="subtle" color="gray" onClick={() => {
-            setAchor([...anchor, {title: 'edit', href: '#'}])
-            navigate(`/verifications/${item.id}/edit`)
-          }}
-          >
-            <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-          </ActionIcon>
           <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteItem(item.id)}>
             <IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
           </ActionIcon>
@@ -150,7 +85,7 @@ const Verifications: React.FC = () =>{
   }
 
   useEffect(() => {
-    getVerificationsPagination(page, 8).then((res: any) => {
+    getTokensPagination(page, 8).then((res: any) => {
       setDataList(res.data);
       setTotalPage(res.pagination.total_pages);
 		}).catch(err => console.log(err))
@@ -204,19 +139,6 @@ const Verifications: React.FC = () =>{
             </Popover>
           }
         />
-        <Button 
-          size="sm"
-          variant="filled" 
-          color="yellow" 
-          radius="md"
-          leftSection={<IconCirclePlus size={20}/>}
-          onClick={() => {
-            setAchor([...anchor, {title: 'new', href: '#'}]);
-            navigate("/verifications/new");
-          }}
-        >
-          Add
-        </Button>
       </Group>
       </Group>
 
@@ -225,9 +147,8 @@ const Verifications: React.FC = () =>{
           <Table.Thead>
             <Table.Tr>
               <Table.Th>User</Table.Th>
-              <Table.Th ta={'center'}>Email verified</Table.Th>
-              <Table.Th ta={'center'}>Enable OTP</Table.Th>
-              <Table.Th ta={'center'}>OTP verified</Table.Th>
+              <Table.Th ta={'center'}>Create at</Table.Th>
+              <Table.Th ta={'center'}>Description</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{rows}</Table.Tbody>
@@ -236,9 +157,9 @@ const Verifications: React.FC = () =>{
       <Group justify="center" pt={36}>
         <Pagination value={page} onChange={setPage} total={totalPage}/>
       </Group>
-      <DeleteVerificationModal opened={delUserOpened} close={delUserHandlers.close} record_id={delDataId} setPage={setPage}/>
+      <DeleteTokenModal opened={delUserOpened} close={delUserHandlers.close} record_id={delDataId} setPage={setPage}/>
     </>
     
   );
 }
-export default Verifications
+export default Tokens
