@@ -93,3 +93,19 @@ export const notifyDeleteFailed = () => {
 		'failed'
 	);
 }
+
+export const notifyProcessSuccess = () => {
+	notifyShow(
+		'Your process success',
+    'Successfully your process',
+		'success'
+	);
+}
+
+export const notifyProcessFailed = () => {
+	notifyShow(
+		'Your process failed',
+    'Unsuccessfully your process, Please contact admin.',
+		'failed'
+	);
+}

@@ -60,6 +60,7 @@ const EditImageProfileModal: React.FC<IProps> = (props) =>{
 			if (result.message !== "success"){
 				setErrorText(result.message);
 			} else {
+				window.location.reload();
 				props.close();	
 			}
 		} catch (err) {

@@ -59,3 +59,31 @@ export const updateForgotPassword = async (body: INewPassword, user_id: string, 
     return(err.response.data)
 	}
 }
+
+export const requestVerifyEmail = async (email: string) => {
+	try {
+		let res = await api.post('/email/token/generate', {email: email});
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			throw false;
+		}
+	} catch (err: any) {
+		console.log('requestVerifyEmail: ', err);
+    throw(err.response.data)
+	}
+}
+
+export const verifyEmail = async (user_id: string, token: string) => {
+	try {
+		let res = await api.post(`/email/token/verify?user_id=${user_id}&token=${token}` );
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			throw false;
+		}
+	} catch (err: any) {
+		console.log('verifyEmail: ', err);
+    throw(err.response.data)
+	}
+}

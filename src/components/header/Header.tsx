@@ -18,16 +18,19 @@ import {
   IconEdit, 
   IconSettings, 
   IconLogout, 
-  IconBell 
+  IconBell,
+  IconPencil
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mantine/hooks';
-import { useRecoilState } from 'recoil';
-import { userState, registerState } from "../../store/user";
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { userState, registerState, profileState, verifyState } from "../../store/user";
 import { signout } from '../../services/authen';
 
 export function Header() {
   const [currentUser, setCurrentUser] = useRecoilState(userState);
+  const currentProfile = useRecoilValue(profileState);
+  const currentVerify = useRecoilValue(verifyState);
   const [_, setRegisterState] = useRecoilState(registerState);
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
@@ -110,7 +113,19 @@ export function Header() {
         <Menu.Dropdown>
           <Group>
             {/* <Avatar color="cyan" radius="xl">US</Avatar> */}
-            <Avatar src={currentUser?.image_profile} alt="it's me" />
+            <Indicator 
+              inline 
+              size={20} 
+              offset={7} 
+              position="bottom-end" 
+              color="gray" 
+              withBorder
+              style={{"cursor": 'pointer'}}
+              label={<IconPencil style={{ width: '80%', height: '80%' }} stroke={2} />}
+              onClick={() => navigate(`profiles/${currentProfile?.profile_id}/image`)}
+            >
+              <Avatar src={currentUser?.image_profile} alt="it's me" />
+            </Indicator>
             <Flex
               mih={50}
               gap="0"
@@ -124,13 +139,22 @@ export function Header() {
             </Flex>
           </Group>
           <Menu.Divider />
-          <Menu.Item leftSection={<IconUser size={15}/>}>
-            View profile
+          <Menu.Item 
+            leftSection={<IconUser size={15}/>} 
+            onClick={() => navigate(`/profiles/${currentProfile?.profile_id}`)}
+          >
+            View profile 
           </Menu.Item>
-          <Menu.Item leftSection={<IconEdit size={15}/>}>
+          <Menu.Item 
+            leftSection={<IconEdit size={15}/>}
+            onClick={() => navigate(`/profiles/${currentProfile?.profile_id}/edit`)}  
+          >
             Edit profile
           </Menu.Item>
-          <Menu.Item leftSection={<IconSettings size={15}/>}>
+          <Menu.Item 
+            leftSection={<IconSettings size={15}/>}
+            onClick={() => navigate(`/account/setting`)} 
+          >
             Account setting
           </Menu.Item>
           <Menu.Divider />

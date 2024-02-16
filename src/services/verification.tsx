@@ -1,5 +1,7 @@
 import { api } from "../utils/axios";
 import { IAddVerification, IUpdateVerification } from "../types/verification.type";
+import { getTokenDecode } from "../utils/token";
+import { ITokenDecode } from "../types/user.type";
 export const getVerificationByUserId = async (id: string) => {
 	try {
 		let res = await api.get(`/user/verification/${id}`);
@@ -104,5 +106,28 @@ export const deleteVerification = async (id: string) => {
 	} catch (err: any) {
 		console.log('deleteVerification: ', err);
     throw err.response
+	}
+}
+
+export const getCurrentVerification = async () => {
+	try {
+		const decode: ITokenDecode | null = getTokenDecode();
+		if (decode !== null) {
+			const { uid } = decode; 
+
+			let res = await api.get(`/user/verification/${uid}`);
+
+			if ((res.status === 200) && (res.data)) {
+				return res.data;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+		
+	} catch (err: any) {
+		console.log('getCurrentVerification: ', err);
+    return(err.response)
 	}
 }

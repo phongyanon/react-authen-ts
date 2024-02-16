@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { 
   IconUser, 
@@ -52,13 +52,13 @@ export function Navbar() {
 
     if (item.hasOwnProperty('text')) {
       return(
-        <Text size="xs" p="xs" c="dimmed" key={item.text}>{item.text}</Text>
+        <Text size="xs" p="xs" c="dimmed" key={`${item.text}-${index}`}>{item.text}</Text>
       )
     } else {
       return (
         <NavLink
           // href={item.path}
-          key={item.label}
+          key={`${item.label}-${index}`}
           active={index === active}
           label={item.label}
           // description={item.description}
@@ -73,10 +73,6 @@ export function Navbar() {
       )
     }
   });
-
-  useEffect(() => {
-    console.log('Nav: ', user);
-  }, [])
 
   return(
     <Box w={300}>

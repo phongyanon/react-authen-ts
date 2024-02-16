@@ -42,10 +42,10 @@ export const getCurrentProfile = async () => {
 		if (decode !== null) {
 			const { uid } = decode; 
 
-			let profile_res = await api.get(`/user/profile/${uid}`);
+			let res = await api.get(`/user/profile/${uid}`);
 
-			if ((profile_res.status === 200) && (profile_res.data)) {
-				return {image_profile: profile_res.data.image_profile};
+			if ((res.status === 200) && (res.data)) {
+				return {...res.data, image_profile: res.data.image_profile, profile_id: res.data.id};
 			} else {
 				return null;
 			}

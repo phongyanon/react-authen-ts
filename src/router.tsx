@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { MainLayout } from "./components/layout/Layout";
 import { ErrorPage } from "./components/error/ErrorPage";
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { IUserInfo } from "./types/user.type";
-import { userState } from "./store/user";
+import { userState, profileState, verifyState } from "./store/user";
 import { getCurrentUser, getCurrentProfile } from "./services/user";
+import { getCurrentVerification } from "./services/verification";
 import { getTokenDecode } from "./utils/token";
 import Users from "./pages/user";
 import UserForm from "./pages/user/components/UserForm";
@@ -26,6 +27,8 @@ import Tokens from "./pages/token";
 import Setting from "./pages/setting";
 import Document from "./pages/document";
 import Contact from "./pages/contact";
+import AccountSetting from "./pages/accountSetting";
+import VerifyEmail from "./pages/authen/VerifyEmail";
 import { NewPassword } from "./pages/authen/NewPassword";
 import Overview from "./pages/overview";
 import { LandingPage } from "./components/landing/landing";
@@ -61,20 +64,24 @@ const AuthRoute = ({ user, redirectPath, children }: ICustomRoute) => {
 
 export const Router = () => {
   const [user, setCurrentUser] = useRecoilState(userState);
+  const setCurrentProfile = useSetRecoilState(profileState);
+  const setCurrentVerify = useSetRecoilState(verifyState);
 
   useEffect( () => {
     console.log('currentUser: ', user)
     if ((user) || (getTokenDecode !== null)) {
-      Promise.all([getCurrentUser(), getCurrentProfile()]).then((values) => {
-        if ((values[0] !== null) && (values[1].image_profile)) {
+      Promise.all([getCurrentUser(), getCurrentProfile(), getCurrentVerification()]).then((values) => {
+        if ((values[0] !== null) && (values[1].image_profile) && (values[2] !== null)) {
           let user_info: IUserInfo = values[0];
           user_info.image_profile = values[1].image_profile;
           setCurrentUser(user_info);
+          setCurrentProfile(values[1]);
+          setCurrentVerify(values[2]);
         }
         else if (values[0] !== null) {
           setCurrentUser(values[0]);
         }
-      });
+      }).catch(err => console.log(err));
     }
   }, []);
 
@@ -130,14 +137,14 @@ export const Router = () => {
             {
               path: "/profiles",
               element: 
-                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin']}>
                   <Profiles/>
                 </ProtectRoute>,
             },
             {
               path: "/profiles/new",
               element: 
-                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin']}>
                   <ProfileForm/>
                 </ProtectRoute>,
             },
@@ -218,6 +225,13 @@ export const Router = () => {
                   <Contact/>
                 </ProtectRoute>,
             },
+            {
+              path: "/account/setting",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <AccountSetting/>
+                </ProtectRoute>,
+            },
           ]
         }
       ],
@@ -263,6 +277,11 @@ export const Router = () => {
         <AuthRoute redirectPath="/overview" user={user}>
           <NewPassword/>
         </AuthRoute>,
+    },
+    {
+      path: "/email/verify/:user_id/:token",
+      element: 
+        <VerifyEmail/>,
     },
   ]);
 
