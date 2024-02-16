@@ -68,7 +68,6 @@ export const Router = () => {
   const setCurrentVerify = useSetRecoilState(verifyState);
 
   useEffect( () => {
-    console.log('currentUser: ', user)
     if ((user) || (getTokenDecode !== null)) {
       Promise.all([getCurrentUser(), getCurrentProfile(), getCurrentVerification()]).then((values) => {
         if ((values[0] !== null) && (values[1].image_profile) && (values[2] !== null)) {
@@ -156,6 +155,13 @@ export const Router = () => {
                 </ProtectRoute>,
             },
             {
+              path: "user/profile/:user_id/edit",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <ProfileForm/>
+                </ProtectRoute>,
+            },
+            {
               path: "profiles/:profile_id",
               element: 
                 <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
@@ -163,7 +169,21 @@ export const Router = () => {
                 </ProtectRoute>,
             },
             {
+              path: "user/profile/:user_id",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <ProfileView/>
+                </ProtectRoute>,
+            },
+            {
               path: "profiles/:profile_id/image",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <EditImageProfile/>
+                </ProtectRoute>,
+            },
+            {
+              path: "user/profile/:user_id/image",
               element: 
                 <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
                   <EditImageProfile/>

@@ -10,6 +10,7 @@ import {
 	Table,
 	ThemeIcon
 } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { IconCheck, IconX } from '@tabler/icons-react';
 // import { useNavigate, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -18,15 +19,25 @@ import { IVerification } from '../../types/verification.type';
 import { IUserInfo } from '../../types/user.type';
 import { requestVerifyEmail } from '../../services/authen';
 import { notifyProcessSuccess, notifyProcessFailed } from '../../utils/notification';
+import Setup2faModal from './components/Setup2faModal';
+import Disable2faModal from './components/Disable2faModal';
+import { generateTOTP } from '../../services/totp';
 
 const AccountSetting: React.FC = () => {
 	// const navigate = useNavigate();
-	const [checked, setChecked] = useState(false);
 	const currentUser = useRecoilValue(userState);
 	const currentVerify = useRecoilValue(verifyState);
 	const [data, setData] = useState<IVerification | null>(null);
 	const [userData, setUserData] = useState<IUserInfo | null>(null);
 	const [resendLoading, setResendLoading] = useState<boolean>(false);
+	const [setup2faLoading, setSetup2faLoading] = useState<boolean>(false);
+	const [setup2faOpened, setup2faHandlers] = useDisclosure(false);
+	const [disable2faOpened, disable2faHandlers] = useDisclosure(false);
+	const [userId, setUserId] = useState<string>('');
+	const [otpAuthUrl, setOtpAuthUrl] = useState<string>('');
+	const [base32, setBase32] = useState<string>('');
+	const [is2faEnable, setIs2faEnable] = useState<boolean>(false);
+	
 
 	const handleResendVerifyEmail = async () => {
 		console.log(userData);
@@ -46,10 +57,29 @@ const AccountSetting: React.FC = () => {
 		}
 	}
 
+	const setUp2fa = async () => {
+		setSetup2faLoading(true);
+		try {
+			let res = await generateTOTP(userId);
+			// otpauth://totp/MyAuthenBoss:phongyanon@gmail.com?secret=xxx&issuer=MyAuthenBoss&digits=6&period=60
+			setOtpAuthUrl(`otpauth://totp/StartUp:phongyanon@gmail.com?secret=${res.base32}&issuer=StartUp&digits=6&period=60`);
+			setBase32(res.base32);
+			setup2faHandlers.open();
+			setSetup2faLoading(false);
+		} catch (err) {
+			setSetup2faLoading(false);
+			console.log(err);
+		}
+	}
+
 	useEffect(() => {
 		if (currentUser && currentVerify) {
 			setData(currentVerify);
 			setUserData(currentUser);
+			setUserId(currentUser.uid);
+			if (currentVerify.enable_opt) {
+				setIs2faEnable(true);
+			}
 		}
 	}, [])
 
@@ -90,7 +120,7 @@ const AccountSetting: React.FC = () => {
 						<Table.Td ta="end" fw="bold" c="dimmed">Enable OTP : </Table.Td>
 						<Table.Td>
 							<Group>
-								{data?.enable_opt ? 
+								{is2faEnable ? 
 								<ThemeIcon variant="light" radius="xl" color="teal">
 									<IconCheck style={{ width: '70%', height: '70%' }} />
 								</ThemeIcon>
@@ -98,9 +128,8 @@ const AccountSetting: React.FC = () => {
 								<ThemeIcon variant="light" radius="xl" color="red">
 									<IconX style={{ width: '70%', height: '70%' }} />
 								</ThemeIcon>}
-								<Button>Setup 2FA</Button>
-								{/* otpauth://totp/MyAuthenBoss:phongyanon@gmail.com?secret=xxx&issuer=MyAuthenBoss&digits=6&period=60 */}
-								<Button disabled>Disable 2FA</Button>
+								<Button loading={setup2faLoading} onClick={() => setUp2fa()} disabled={is2faEnable}>Setup 2FA</Button>
+								<Button onClick={() => disable2faHandlers.open()} disabled={!is2faEnable}>Disable 2FA</Button>
 							</Group>
 						</Table.Td>
 					</Table.Tr>
@@ -116,7 +145,6 @@ const AccountSetting: React.FC = () => {
 								<ThemeIcon variant="light" radius="xl" color="red">
 									<IconX style={{ width: '70%', height: '70%' }} />
 								</ThemeIcon>}
-								<Button>Verify OTP</Button>
 							</Group>
 						</Table.Td>
 					</Table.Tr>
@@ -125,6 +153,20 @@ const AccountSetting: React.FC = () => {
 			</Box>
 
 		</Paper>
+		<Setup2faModal 
+			opened={setup2faOpened} 
+			close={setup2faHandlers.close} 
+			record_id={userId} 
+			otp_auth_url={otpAuthUrl} 
+			base32={base32}
+			setIs2faEnable={setIs2faEnable}
+		/>
+		<Disable2faModal 
+			opened={disable2faOpened} 
+			close={disable2faHandlers.close} 
+			record_id={userId}
+			setIs2faEnable={setIs2faEnable}
+		/>
 		</>
 	)
 }

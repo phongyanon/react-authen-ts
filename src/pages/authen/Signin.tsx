@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   Paper,
   TextInput,
@@ -26,11 +26,15 @@ import TermsOfUseModal from '../../components/policy/TermsOfUse';
 import { signin } from '../../services/authen';
 import { ISignin } from '../../types/authen.type';
 import { getCurrentUser, getCurrentProfile } from '../../services/user';
+import { getCurrentVerification } from '../../services/verification';
 import { IUserInfo } from '../../types/user.type';
-import { userState } from '../../store/user';
+import { userState, profileState } from '../../store/user';
+import { verifyState } from '../../store/user';
 
 export function Signin() {
   const [_, setCurrentUser] = useRecoilState(userState);
+  const setCurrentProfile = useSetRecoilState(profileState);
+  const setCurrentVerify = useSetRecoilState(verifyState);
   const [policyOpened, policyOpenHandler] = useDisclosure(false);
 	const [termsOfUseOpened, termsOfUseOpenHandler] = useDisclosure(false);
   const [loaderVisible, loaderHandler ] = useDisclosure(false);
@@ -55,11 +59,13 @@ export function Signin() {
         localStorage.setItem('access_token', result.access_token);
         localStorage.setItem('refresh_token', result.refresh_token);
 
-        Promise.all([getCurrentUser(), getCurrentProfile()]).then((values) => {
-          if ((values[0] !== null) && (values[1].image_profile)) {
+        Promise.all([getCurrentUser(), getCurrentProfile(), getCurrentVerification()]).then((values) => {
+          if ((values[0] !== null) && (values[1].image_profile) && (values[2] !== null)) {
             let user_info: IUserInfo = values[0];
             user_info.image_profile = values[1].image_profile;
             setCurrentUser(user_info);
+            setCurrentProfile(values[1]);
+            setCurrentVerify(values[2]);
           }
           else if (values[0] !== null) {
             setCurrentUser(values[0]);

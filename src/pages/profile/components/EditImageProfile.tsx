@@ -16,7 +16,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconCameraPlus, IconArrowBigUp, IconPencil } from '@tabler/icons-react';
 import EditImageProfileModal from './EditImageProfileModal';
-import { getProfile } from '../../../services/profile';
+import { getProfile, getProfileByUserId } from '../../../services/profile';
 
 export function EditImageProfile() {
 	const navigate = useNavigate();
@@ -29,6 +29,7 @@ export function EditImageProfile() {
 	const [currentToken, setCurrentToken] = useState<string | null>(null);
   const resetRef = useRef<() => void>(null);
 	const { profile_id } = useParams();
+  const { user_id } = useParams();
 
 	useEffect(() => {
 		if (profile_id) {
@@ -36,7 +37,13 @@ export function EditImageProfile() {
 				if (res.image_profile) setCroppedImage(res.image_profile)
 				if (res.user_id) setCurrentUID(res.user_id);
 			})
-		}
+		} 
+    else if (user_id) {
+      getProfileByUserId(user_id).then((res: any) => {
+				if (res.image_profile) setCroppedImage(res.image_profile)
+        setCurrentUID(user_id);
+			})
+    }
 
 		const storage_access_token: string | null = localStorage.getItem('access_token');
 		if (storage_access_token !== null) setCurrentToken(storage_access_token);

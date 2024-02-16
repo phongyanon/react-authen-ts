@@ -11,19 +11,21 @@ import {
 	Table
 } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { anchorState } from '../../../store/user';
-import { getProfile } from '../../../services/profile';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { anchorState, userState } from '../../../store/user';
+import { getProfile, getProfileByUserId } from '../../../services/profile';
 import { getUser } from '../../../services/user';
 import { IProfile } from '../../../types/profile.type';
-import { IUser } from '../../../types/user.type';
+import { IUserInfo } from '../../../types/user.type';
 
 const ProfileView: React.FC = () => {
 	const [anchor, setAnchor] = useRecoilState(anchorState);
 	const navigate = useNavigate();
 	let { profile_id } = useParams();
+	let { user_id } = useParams();
+	const currentUser = useRecoilValue(userState);
 	const [data, setData] = useState<IProfile | null>(null);
-	const [userData, setUserData] = useState<IUser | null>(null);
+	const [userData, setUserData] = useState<IUserInfo | null>(null);
 
 	useEffect(() => {
 		if (profile_id){
@@ -32,6 +34,12 @@ const ProfileView: React.FC = () => {
 				return getUser(res.user_id)
 			}).then((res: any) => {
 				setUserData(res)
+			}).catch(err => console.log(err));
+		} 
+		else if (user_id) {
+			getProfileByUserId(user_id).then((res: any) => {
+				setData(res);
+				if (currentUser) setUserData(currentUser);
 			}).catch(err => console.log(err));
 		}
 	}, [])

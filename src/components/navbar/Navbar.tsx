@@ -46,7 +46,7 @@ export function Navbar() {
       });
 
       if (hasPermission === false) {
-        return <></>
+        return
       }
     }
 

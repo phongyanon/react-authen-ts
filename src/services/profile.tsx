@@ -61,6 +61,20 @@ export const updateProfile = async (body: IUpdateProfile) => {
 	}
 }
 
+export const updateProfileByUserId = async (body: IUpdateProfile) => {
+	try {
+		let res = await api.put(`/user/profile/${body.user_id}`, body);
+    if ((res.status === 200) && res.data) {
+			return res.data;
+		} else {
+			return false;
+		}
+	} catch (err: any) {
+		console.log('updateProfileByUserId: ', err);
+    throw (err.response.data)
+	}
+}
+
 export const deleteProfile = async (id: string) => {
 	try {
 		let res = await api.delete(`/profile/${id}`);

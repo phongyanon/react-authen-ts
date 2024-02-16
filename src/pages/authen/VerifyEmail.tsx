@@ -13,10 +13,8 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconCheck, IconX } from '@tabler/icons-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { userState, verifyState } from '../../store/user';
-import { IVerification } from '../../types/verification.type';
-import { IUserInfo } from '../../types/user.type';
+import { useRecoilState } from 'recoil';
+import { verifyState } from '../../store/user';
 import { verifyEmail } from '../../services/authen';
 
 const VerifyEmail: React.FC = () => {
@@ -24,10 +22,7 @@ const VerifyEmail: React.FC = () => {
 	const { user_id } = useParams();
 	const { token } = useParams();
 	const [loading, loadingHandler] = useDisclosure(true);
-	const currentUser = useRecoilValue(userState);
 	const [currentVerify, setCurrentVerify] = useRecoilState(verifyState);
-	const [data, setData] = useState<IVerification | null>(null);
-	const [userData, setUserData] = useState<IUserInfo | null>(null);
 	const [success, setSuccess] = useState<boolean>(false);
 
 	useEffect(() => {

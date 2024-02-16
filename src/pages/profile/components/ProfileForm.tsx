@@ -19,20 +19,21 @@ import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { notifyAddSuccess, notifyAddFailed, notifyEditSuccess, notifyEditFailed } from '../../../utils/notification';
-import { anchorState } from '../../../store/user';
+import { anchorState, userState } from '../../../store/user';
 import { dateParser } from '../../../utils/date';
 import { getUsers } from '../../../services/user';
-import { getProfile, addProfile, updateProfile } from '../../../services/profile';
+import { getProfile, addProfile, updateProfile, getProfileByUserId, updateProfileByUserId } from '../../../services/profile';
 import { IAddProfile, IUpdateProfile } from '../../../types/profile.type';
 
 const ProfileForm: React.FC = () => {
 	const navigate = useNavigate();
 	const { profile_id } = useParams();
-	// const currentUser = useRecoilValue(userState);
+	const { user_id } = useParams();
+	const currentUser = useRecoilValue(userState);
 	const [anchor, setAnchor] = useRecoilState(anchorState);
-	const [userOption, setUserOption] = useState([]);
+	const [userOption, setUserOption] = useState<any>([]);
 	const [loading, loadingHandler] = useDisclosure(false);
 	const form = useForm({
     initialValues: {
@@ -61,7 +62,7 @@ const ProfileForm: React.FC = () => {
 			date_of_birth: parseInt(form.values.date_of_birth.valueOf()) / 1000,
 			zip_code: parseInt(form.values.zip_code)
 		}
-		if (profile_id) {
+		if (profile_id || user_id) {
 			handleSubmitUpdate(profile_data as IUpdateProfile);
 		} else {
 			handleSubmitAdd(profile_data as IAddProfile);
@@ -90,9 +91,15 @@ const ProfileForm: React.FC = () => {
 	const handleSubmitUpdate = async (data: IUpdateProfile) => {
 		loadingHandler.toggle();
 		try {
-			console.log('data: ', data)
-			let result = await updateProfile({...data, profile_id: profile_id});
-			if (result === false) throw 'Unsuccessfully updateProfile';
+			if (profile_id) {
+				let result = await updateProfile({...data, profile_id: profile_id});
+				if (result === false) throw 'Unsuccessfully updateProfile';
+			} else if (user_id) {
+				let result = await updateProfileByUserId(data);
+				if (result === false) throw 'Unsuccessfully updateProfileByUserId';
+			} else {
+				throw 'No permission'
+			}
 
 			notifyEditSuccess();
 			loadingHandler.close();
@@ -129,7 +136,26 @@ const ProfileForm: React.FC = () => {
 					zip_code: res.zip_code,
 				})
 			})
-		}
+		} 
+		else if (user_id) {
+			getProfileByUserId(user_id).then((res: any) => {
+				let dateOfBirth = new Date(res.date_of_birth * 1000);
+				setUserOption([{value: res.user_id, label: currentUser?.username}]);
+				form.setValues({
+					user_id: res.user_id,
+					first_name_EN: res.first_name_EN,
+					last_name_EN: res.last_name_EN,
+					first_name_TH: res.first_name_TH,
+					last_name_TH: res.last_name_TH,
+					date_of_birth: dateOfBirth as any,
+					gender: res.gender,
+					address_EN: res.address_EN,
+					address_TH: res.address_TH,
+					phone: res.phone,
+					zip_code: res.zip_code,
+				})
+			})
+		} 
 	}, []);
 
 	return (

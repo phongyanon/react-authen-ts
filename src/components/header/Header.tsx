@@ -23,14 +23,14 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mantine/hooks';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { userState, registerState, profileState, verifyState } from "../../store/user";
 import { signout } from '../../services/authen';
 
 export function Header() {
   const [currentUser, setCurrentUser] = useRecoilState(userState);
-  const currentProfile = useRecoilValue(profileState);
-  const currentVerify = useRecoilValue(verifyState);
+  const [currentProfile, setCurrentProfile] = useRecoilState(profileState);
+  const setCurrentVerify = useSetRecoilState(verifyState);
   const [_, setRegisterState] = useRecoilState(registerState);
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
@@ -42,6 +42,8 @@ export function Header() {
     try {
       setCurrentUser(undefined);
       setRegisterState(undefined);
+      setCurrentProfile(undefined);
+      setCurrentVerify(undefined);
       await signout();
       navigate('/signin');
     } catch (error) {
@@ -62,6 +64,7 @@ export function Header() {
       </ActionIcon>
 
       <Menu shadow="md" width={360}>
+        {/* <img src={currentUser?.image_profile} referrerPolicy='no-referrer'/> */}
         <Menu.Target>
           <ActionIcon variant="default" color="gray" aria-label="Settings" radius="md" size={isMobileS ? "xs": "lg"}>
             <Indicator inline label="5" size={18}>
@@ -106,7 +109,7 @@ export function Header() {
         <Menu.Target>
           <UnstyledButton style={{display: "flex", alignItems: "center"}}>
             {/* <Avatar color="cyan" radius="xl">US</Avatar> */}
-            <Avatar src={currentUser?.image_profile} alt="it's me" />
+            <Avatar src={currentUser?.image_profile} alt="it's me"/>
             {isMobileL ? <></>: <Text ml={16}>{currentUser?.username}</Text>}
           </UnstyledButton>
         </Menu.Target>
@@ -122,7 +125,7 @@ export function Header() {
               withBorder
               style={{"cursor": 'pointer'}}
               label={<IconPencil style={{ width: '80%', height: '80%' }} stroke={2} />}
-              onClick={() => navigate(`profiles/${currentProfile?.profile_id}/image`)}
+              onClick={() => navigate(`user/profile/${currentUser?.uid}/image`)}
             >
               <Avatar src={currentUser?.image_profile} alt="it's me" />
             </Indicator>
@@ -141,13 +144,13 @@ export function Header() {
           <Menu.Divider />
           <Menu.Item 
             leftSection={<IconUser size={15}/>} 
-            onClick={() => navigate(`/profiles/${currentProfile?.profile_id}`)}
+            onClick={() => navigate(`user/profile/${currentUser?.uid}`)}
           >
             View profile 
           </Menu.Item>
           <Menu.Item 
             leftSection={<IconEdit size={15}/>}
-            onClick={() => navigate(`/profiles/${currentProfile?.profile_id}/edit`)}  
+            onClick={() => navigate(`user/profile/${currentUser?.uid}/edit`)}  
           >
             Edit profile
           </Menu.Item>
