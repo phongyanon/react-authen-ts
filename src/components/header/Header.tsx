@@ -125,7 +125,7 @@ export function Header() {
               withBorder
               style={{"cursor": 'pointer'}}
               label={<IconPencil style={{ width: '80%', height: '80%' }} stroke={2} />}
-              onClick={() => navigate(`user/profile/${currentUser?.uid}/image`)}
+              onClick={() => navigate(`loading/user+profile+${currentUser?.uid}+image`)}
             >
               <Avatar src={currentUser?.image_profile} alt="it's me" />
             </Indicator>
@@ -144,19 +144,19 @@ export function Header() {
           <Menu.Divider />
           <Menu.Item 
             leftSection={<IconUser size={15}/>} 
-            onClick={() => navigate(`user/profile/${currentUser?.uid}`)}
+            onClick={() => navigate(`loading/user+profile+${currentUser?.uid}`)}
           >
             View profile 
           </Menu.Item>
           <Menu.Item 
             leftSection={<IconEdit size={15}/>}
-            onClick={() => navigate(`user/profile/${currentUser?.uid}/edit`)}  
+            onClick={() => navigate(`loading/user+profile+${currentUser?.uid}+edit`)}  
           >
             Edit profile
           </Menu.Item>
           <Menu.Item 
             leftSection={<IconSettings size={15}/>}
-            onClick={() => navigate(`/account/setting`)} 
+            onClick={() => navigate(`loading/account+setting`)} 
           >
             Account setting
           </Menu.Item>

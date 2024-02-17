@@ -32,6 +32,8 @@ import VerifyEmail from "./pages/authen/VerifyEmail";
 import { NewPassword } from "./pages/authen/NewPassword";
 import Overview from "./pages/overview";
 import { LandingPage } from "./components/landing/landing";
+import { LoadingPage } from "./components/loading/loadingPage";
+import { LoadingFacebookAuthen } from "./pages/authen/authenFacebook";
 
 interface ICustomRoute {
   user?: any
@@ -252,6 +254,13 @@ export const Router = () => {
                   <AccountSetting/>
                 </ProtectRoute>,
             },
+            {
+              path: "loading/:target_path",
+              element: 
+                <ProtectRoute redirectPath="/signin" user={user} roles={['SuperAdmin', 'Admin', 'User']}>
+                  <LoadingPage/>
+                </ProtectRoute>,
+            },
           ]
         }
       ],
@@ -302,6 +311,11 @@ export const Router = () => {
       path: "/email/verify/:user_id/:token",
       element: 
         <VerifyEmail/>,
+    },
+    {
+      path: "/authen/facebook",
+      element: 
+        <LoadingFacebookAuthen/>,
     },
   ]);
 

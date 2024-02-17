@@ -182,7 +182,7 @@ const ProfileForm: React.FC = () => {
           loaderProps={{ color: 'violet', type: 'bars' }}
 					pos={"fixed"}
         />
-			<Center pb={12}><Title order={3}>{profile_id === undefined ? 'New Profile': 'Edit Profile'}</Title></Center>
+			<Center pb={12}><Title order={3}>{(profile_id === undefined) && (user_id === undefined) ? 'New Profile': 'Edit Profile'}</Title></Center>
 			<form onSubmit={form.onSubmit(() => {handleSubmit()})}>
 				<Box maw={340} mx="auto">
 					<Group justify="space-between">
@@ -253,7 +253,7 @@ const ProfileForm: React.FC = () => {
 					/>
 					<Group justify="center" mt="xl">
 						<Button type="submit">
-							{profile_id === undefined ? 'Add profile': 'Update profile'}
+							{(profile_id === undefined) && (user_id === undefined) ? 'Add profile': 'Update profile'}
 						</Button>
 						<Button variant="outline" onClick={() => {
 							setAnchor([{title: 'Profile', href: '/profiles'}])

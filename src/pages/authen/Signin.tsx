@@ -30,6 +30,7 @@ import { getCurrentVerification } from '../../services/verification';
 import { IUserInfo } from '../../types/user.type';
 import { userState, profileState } from '../../store/user';
 import { verifyState } from '../../store/user';
+import { facebookAuthenUrl } from './authenFacebook';
 
 export function Signin() {
   const [_, setCurrentUser] = useRecoilState(userState);
@@ -100,7 +101,15 @@ export function Signin() {
 
 				<Group grow mb="md" mt="md">
 					<Button variant="light" radius="xl" leftSection={<IconBrandGoogle size={20}/>}>Google</Button>
-					<Button variant="light" radius="xl" leftSection={<IconBrandFacebook size={20}/>}>Facebook</Button>
+					<Button 
+            variant="light" 
+            radius="xl" 
+            leftSection={<IconBrandFacebook size={20}/>}
+            component='a'
+            href={facebookAuthenUrl}
+          >
+            Facebook
+          </Button>
       	</Group>
 
       	<Divider label="Or continue with email" labelPosition="center" my="lg" />
