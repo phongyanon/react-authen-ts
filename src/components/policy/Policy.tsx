@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Text, Group, Button, Divider, ScrollArea , List } from '@mantine/core';
 import {IconFileText} from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
   opened: boolean;
@@ -8,8 +9,10 @@ interface IProps {
 }
 
 const PolicyModal: React.FC<IProps> = (props) =>{
+	const { t } = useTranslation();
+
   return (
-		<Modal opened={props.opened} onClose={props.close} title={<Group><IconFileText size={30}/><Text size="lg" fw="bold">Privacy Policy</Text></Group>} size={"xl"}>
+		<Modal opened={props.opened} onClose={props.close} title={<Group><IconFileText size={30}/><Text size="lg" fw="bold">{t('Privacy Policy')}</Text></Group>} size={"xl"}>
 			<Divider pb={16}/>
 			<ScrollArea h={440} p="xl">
 				<Text fw="bold" ta="center" mb={20}>Paper is the most basic ui component</Text>
@@ -48,7 +51,7 @@ const PolicyModal: React.FC<IProps> = (props) =>{
    		</ScrollArea >
 			<Divider pb={16}/>
 			<Group justify="center">
-				<Button variant="default" onClick={props.close}>Close</Button>
+				<Button variant="default" onClick={props.close}>{t('Close')}</Button>
 			</Group>
     </Modal>
 	)

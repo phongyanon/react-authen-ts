@@ -14,12 +14,14 @@ import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { updateForgotPassword } from '../../services/authen';
+import { useTranslation } from 'react-i18next';
 
 export function NewPassword() {
   const params = new URLSearchParams(document.location.search);
   const [loading, loadingHandler] = useDisclosure(false);
   const [errorText, setErrorText] = useState<string | null>(null);
   const navigate = useNavigate();
+	const { t } = useTranslation();
   const form = useForm({
     initialValues: {
       new_password: '',
@@ -52,7 +54,7 @@ export function NewPassword() {
     <Container size={460} my={30}>
 			<Center pb={12}><Title order={1}>New password</Title></Center>
       <Text c="dimmed" fz="sm" ta="center">
-        Enter your new password
+        {t('Enter your new password')}
       </Text>
 
       <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
@@ -65,13 +67,13 @@ export function NewPassword() {
         <form onSubmit={form.onSubmit(() => newPasswordHandle())}>
           <PasswordInput 
             name="new_password" 
-            label="New password" 
+            label={t("New password")} 
             placeholder="New password" 
             {...form.getInputProps('new_password')}  
             error={errorText}
             required />
           <Group mt="lg" grow>
-            <Button type='submit'>Update password</Button>
+            <Button type='submit'>{t('Update password')}</Button>
           </Group>
         </form>
       </Paper>

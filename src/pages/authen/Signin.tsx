@@ -31,6 +31,7 @@ import { IUserInfo } from '../../types/user.type';
 import { userState, profileState } from '../../store/user';
 import { verifyState } from '../../store/user';
 import { facebookAuthenUrl } from './authenFacebook';
+import { useTranslation } from 'react-i18next';
 
 export function Signin() {
   const [_, setCurrentUser] = useRecoilState(userState);
@@ -41,6 +42,7 @@ export function Signin() {
   const [loaderVisible, loaderHandler ] = useDisclosure(false);
   const [formError, setFormError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const form = useForm({
     initialValues: {
@@ -96,7 +98,7 @@ export function Signin() {
           loaderProps={{ color: 'violet', type: 'bars' }}
         />
         <Title order={2} className={classes.title} ta="center" mt="md" mb={50}>
-          Welcome back, Sign in with
+          {t('Welcome back, Sign in with')}
         </Title>
 
 				<Group grow mb="md" mt="md">
@@ -112,46 +114,45 @@ export function Signin() {
           </Button>
       	</Group>
 
-      	<Divider label="Or continue with email" labelPosition="center" my="lg" />
+      	<Divider label={t("Or continue with email")} labelPosition="center" my="lg" />
 
         <form onSubmit={form.onSubmit((values) => signinSubmit(values))}>
           <TextInput 
-            label="Email address" 
+            label={t("Email address")} 
             placeholder="hello@email.com" 
             {...form.getInputProps('username')} 
             size="md"
             error={formError !== null}
           />
           <PasswordInput 
-            label="Password" 
-            placeholder="Your password" 
+            label={t("Password")}
+            placeholder={t("Your password" )}
             {...form.getInputProps('password')} 
             mt="md" 
             size="md" 
-            error={formError}
+            error={t(formError as any)}
           />
           <Button fullWidth mt="xl" size="md" type='submit'>
-            Sign in
+            {t('Sign in')}
           </Button>
         </form>
 
         <Text ta="center" mt="md">
-          Don&apos;t have an account?{' '}
+          {t("Don't have an account?")}{' '}
           <Anchor<'a'> href="/register" fw={700} onClick={(event) => {}}>
-            Register
+            {t('Register')}
           </Anchor>
-					 {' '}or{' '}
+					 {' '}{t('or')}{' '}
 					<Anchor<'a'> href="/password/forgot" fw={700} c="dimmed" onClick={(event) => {}}>
-            Forgot password
+            {t('Forgot password')}
           </Anchor>
         </Text>
 
         <Text ta="center" mt="xl" c="dimmed" size="xs">
-          By clicking sign in with Google or Facebook. you agree to {' '}
-          <Text td="underline" span style={{"cursor": "pointer"}} onClick={() => termsOfUseOpenHandler.open()}>Term of Use</Text> {' '}and{' '}
-          <Text td="underline" span style={{"cursor": "pointer"}} onClick={() => policyOpenHandler.open()}>Privacy Policy</Text>.
-          We may send you communications. you may change your preference in your account setting.
-          We'll never post without your permission.
+          {t('By clicking sign in with Google or Facebook. you agree to ')}{' '}
+          <Text td="underline" span style={{"cursor": "pointer"}} onClick={() => termsOfUseOpenHandler.open()}>{t('Terms of Use')}</Text> {' '}and{' '}
+          <Text td="underline" span style={{"cursor": "pointer"}} onClick={() => policyOpenHandler.open()}>{t('Privacy Policy')}</Text>.
+          {t("We may send you communications. you may change your preference in your account setting. We'll never post without your permission.")}
         </Text>
       </Paper>
       <PolicyModal opened={policyOpened} close={policyOpenHandler.close}/>

@@ -9,6 +9,7 @@ import {
   useMantineColorScheme, 
   useComputedColorScheme, 
   UnstyledButton,
+  Switch,
   em
 } from '@mantine/core';
 import { 
@@ -26,6 +27,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { userState, registerState, profileState, verifyState } from "../../store/user";
 import { signout } from '../../services/authen';
+import { useTranslation } from 'react-i18next';
 
 export function Header() {
   const [currentUser, setCurrentUser] = useRecoilState(userState);
@@ -37,6 +39,8 @@ export function Header() {
   const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
   const isMobileL = useMediaQuery(`(max-width: ${em(500)})`);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
 
   const signOutHandler = async () => {
     try {
@@ -48,6 +52,16 @@ export function Header() {
       navigate('/signin');
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  const langHandle = (check: boolean) => {
+    if (check) {
+      // setLang('th');
+      i18n.changeLanguage('th');
+    } else {
+      // setLang('en');
+      i18n.changeLanguage('en');
     }
   }
 
@@ -65,6 +79,7 @@ export function Header() {
 
       <Menu shadow="md" width={360}>
         {/* <img src={currentUser?.image_profile} referrerPolicy='no-referrer'/> */}
+        <Switch size="lg" onLabel="EN" offLabel="TH" onChange={(event) => langHandle(event.currentTarget.checked)} />
         <Menu.Target>
           <ActionIcon variant="default" color="gray" aria-label="Settings" radius="md" size={isMobileS ? "xs": "lg"}>
             <Indicator inline label="5" size={18}>
@@ -146,23 +161,23 @@ export function Header() {
             leftSection={<IconUser size={15}/>} 
             onClick={() => navigate(`loading/user+profile+${currentUser?.uid}`)}
           >
-            View profile 
+            {t('View profile')}
           </Menu.Item>
           <Menu.Item 
             leftSection={<IconEdit size={15}/>}
             onClick={() => navigate(`loading/user+profile+${currentUser?.uid}+edit`)}  
           >
-            Edit profile
+            {t('Edit profile')}
           </Menu.Item>
           <Menu.Item 
             leftSection={<IconSettings size={15}/>}
             onClick={() => navigate(`loading/account+setting`)} 
           >
-            Account setting
+            {t('Account setting')}
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item leftSection={<IconLogout size={15}/>} onClick={() => signOutHandler()}>
-            Sign out
+            {t('Sign out')}
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>

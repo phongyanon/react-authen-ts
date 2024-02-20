@@ -15,7 +15,8 @@ import {
 	Card,
 	Flex,
 	SimpleGrid,
-  Box,
+  // Box,
+  Switch,
 	em,
 	rem,
   NumberFormatter,
@@ -39,6 +40,7 @@ import {
  import { userState } from '../../store/user';
 import classes from './landing.module.css';
 import { useMediaQuery } from '@mantine/hooks';
+import { useTranslation } from 'react-i18next';
 
 const links = [
   { link: '#featuresRef', label: 'Features' },
@@ -117,6 +119,15 @@ export function LandingPage() {
   const isMobileS = useMediaQuery(`(max-width: ${em(325)})`);
 	const theme = useMantineTheme();
 	const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
+  const langHandle = (check: boolean) => {
+    if (check) {
+      i18n.changeLanguage('th');
+    } else {
+      i18n.changeLanguage('en');
+    }
+  }
 
   const features = featureList.map((feature) => (
     <Card key={feature.title} shadow="md" radius="md" className={classes.card} padding="xl">
@@ -126,19 +137,19 @@ export function LandingPage() {
         color={theme.colors.blue[6]}
       />
       <Text fz="lg" fw={500} className={classes.cardTitle} mt="md">
-        {feature.title}
+        {t((feature as any).title)}
       </Text>
       <Text fz="sm" c="dimmed" mt="sm">
-        {feature.description}
+        {t((feature as any).description)}
       </Text>
     </Card>
   ));
   const prices = priceList.map((price) => (
     <Card key={price.title} shadow="md" radius="md" className={classes.card} padding="xl">
       <Title fw={700} order={2} mt="xs">
-        {price.title}
+        {t((price as any).title)}
       </Title>
-      <NumberFormatter prefix="TH " value={price.price} suffix=" / Month" thousandSeparator />
+      <NumberFormatter value={price.price} suffix={t(" Bath / Month")} thousandSeparator />
       <Divider size="md" mt={12} mb={12} />
       <List
         m={24}
@@ -158,7 +169,7 @@ export function LandingPage() {
             </ThemeIcon>
             }
           >
-            {obj.name}
+            {t((obj as any).name)}
           </List.Item>
         ))}
       
@@ -170,7 +181,7 @@ export function LandingPage() {
         mt="md" 
         radius="md"
       >
-        Get started
+        {t('Get started')}
       </Button>
     </Card>
   ))
@@ -181,7 +192,7 @@ export function LandingPage() {
       className={classes.link}
       // onClick={(event) => event.preventDefault()}
     >
-      {link.label}
+      {t((link as any).label)}
     </a>
   ));
 
@@ -194,9 +205,10 @@ export function LandingPage() {
       <Group h="100%" px="md" grow preventGrowOverflow={false}>
         <Group preventGrowOverflow={false}>
           <IconBrandReact size={30} color="#0063FF"/>
-          <Text c="blue" fw="bold" size="lg" visibleFrom="sm">React Authen TS</Text>
+          <Text c="blue" fw="bold" size="lg" visibleFrom="sm">{t('React Authen TS')}</Text>
         </Group>
         <Group justify="flex-end" gap={5}>
+          <Switch size="lg" onLabel="EN" offLabel="TH" onChange={(event) => langHandle(event.currentTarget.checked)} />
 					<ActionIcon
 						onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
 						variant="default"
@@ -210,11 +222,11 @@ export function LandingPage() {
           {items}
 					</Flex>
           {currentUser !== undefined  ?
-            <Button variant="outline" radius="xs" onClick={() => navigate('/overview')}>Dashboard</Button>
+            <Button variant="outline" radius="xs" onClick={() => navigate('/overview')}>{t('Dashboard')}</Button>
             :
             <>
-              <Button variant="subtle" radius="xs" onClick={() => navigate('/signin')}>Sign in</Button>
-					    <Button variant="outline" radius="xs" onClick={() => navigate('/register')}>Sign up</Button>
+              <Button variant="subtle" radius="xs" onClick={() => navigate('/signin')}>{t('Sign in')}</Button>
+					    <Button variant="outline" radius="xs" onClick={() => navigate('/register')}>{t('Sign up')}</Button>
             </>
           }
         </Group>
@@ -227,11 +239,9 @@ export function LandingPage() {
         zIndex={0}
       />
       <Container className={classes.container} size="md">
-        <Title className={classes.title}>React Typescript Authentication Platform</Title>
+        <Title className={classes.title}>{t('React Typescript Authentication Platform')}</Title>
         <Text className={classes.description} size="xl" mt="xl">
-          Boilerplate for start-up project that has a plenty of showcase for present to 
-					customer or MVP starter for developer. This project will improve our productivity 
-					and techinical knowledge about web development. 
+          {t('Boilerplate for start-up project that has a plenty of showcase for present to customer or MVP starter for developer. This project will improve our productivity and techinical knowledge about web development.')}
         </Text>
 
         <Button 
@@ -242,19 +252,18 @@ export function LandingPage() {
 					className={classes.control}
 					onClick={() => navigate('/signin')}
 				>
-          Get started
+          {t('Get started')}
         </Button>
       </Container>
     </div>
 		<Container size="lg" py="xl">
 
       <Title id="featuresRef" order={2} className={classes.featureTitle} ta="center" mt="sm">
-        Boilerplate project for startup MVP
+        {t('Boilerplate project for startup MVP')}
       </Title>
 
       <Text c="dimmed" className={classes.featutrDescription} ta="center" mt="md">
-        This project has an objective to be an example source code that help us to 
-				make new project faster. The brand new MVP will be go live in 3 months. 
+        {t('This project has an objective to be an example source code that help us to make new project faster. The brand new MVP will be go live in 3 months. ')}
       </Text>
 
       <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl" mt={50}>
@@ -264,7 +273,7 @@ export function LandingPage() {
 
     <Container size="lg" py="xl">
       <Title id="pricingRef" order={2} className={classes.featureTitle} ta="center" mt="sm">
-        Pricing
+        {t('Pricing')}
       </Title>
 
       <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl" mt={50}>
@@ -297,7 +306,7 @@ export function LandingPage() {
       <div className={classes.inner}>
 				<Group preventGrowOverflow={false}>
           <IconBrandReact size={30} color="#0063FF"/>
-          <Text c="blue" fw="bold" size="lg" visibleFrom="sm">React Authen TS</Text>
+          <Text c="blue" fw="bold" size="lg" visibleFrom="sm">{t('React Authen TS')}</Text>
         </Group>
 
         <Group className={classes.links}>{items}</Group>

@@ -26,6 +26,7 @@ import { getCurrentUser } from '../../services/user';
 import { signin } from '../../services/authen';
 import { useNavigate } from 'react-router-dom';
 import { userState, registerState } from '../../store/user';
+import { useTranslation } from 'react-i18next';
 
 export function Register(){
 	const [currentUser, setCurrentUser] = useRecoilState(userState);
@@ -33,6 +34,7 @@ export function Register(){
 	const [formError, setFormError] = useState<boolean>(false);
 	const [loaderVisible, loaderHandler ] = useDisclosure(false);
 	const navigate = useNavigate();
+	const { t } = useTranslation();
   const form = useForm({
     initialValues: {
       // username: '',
@@ -100,9 +102,9 @@ export function Register(){
 
 	return (
 		<Container size={460} my={30}>	
-			<Center pb={12}><Title order={1}>Sign up</Title></Center>
+			<Center pb={12}><Title order={1}>{t('Sign up')}</Title></Center>
 			<Text c="dimmed" fz="sm" ta="center">
-        Register to create your account
+        {t('Register to create your account')}
       </Text>
 			
 			
@@ -118,7 +120,7 @@ export function Register(){
 						<TextInput 
 							name="email" 
 							mt="md" 
-							label="Email" 
+							label={t("Email")} 
 							placeholder="Email" 
 							{...form.getInputProps('email')} 
 							required  
@@ -127,7 +129,7 @@ export function Register(){
 						<PasswordInput 
 							name="password" 
 							mt="md" 
-							label="Password" 
+							label={t("Password" )}
 							placeholder="Password" 
 							{...form.getInputProps('password')} 
 							required  
@@ -136,17 +138,17 @@ export function Register(){
 						
 						<Group justify="space-around" mt="lg" grow>
 							<Button type="submit" leftSection={<IconUserPlus size={20}/>}>
-								Sign up
+								{t("Sign up")}
 							</Button>
 						</Group>
 						<Group justify="center" p={12} gap={"xs"}>
 							<Text c="dimmed" fz="sm" ta="center">
-								Already have an account then {' '}
+								{t('Already have an account then ')}{' '}
 							</Text>
 							<Anchor href="/signin" c="blue" size="sm">
 								<Center inline>
 									<IconArrowLeft style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
-									<Box ml={5}>Login</Box>
+									<Box ml={5}>{t('Login')}</Box>
 								</Center>
 							</Anchor>
 						</Group>

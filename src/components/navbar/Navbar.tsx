@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Box, NavLink, Text } from '@mantine/core';
 import { anchorState, userState } from '../../store/user';
+import { useTranslation } from 'react-i18next';
 
 const nav_links = [
   { text: 'Navigation'},
@@ -35,6 +36,7 @@ export function Navbar() {
   const [_, setAchor] = useRecoilState(anchorState);
   const user = useRecoilValue(userState);
   const navigate = useNavigate();
+	const { t } = useTranslation();
 
   const nav_items = nav_links.map((item, index) => {
     if (item.roles) {
@@ -52,7 +54,7 @@ export function Navbar() {
 
     if (item.hasOwnProperty('text')) {
       return(
-        <Text size="xs" p="xs" c="dimmed" key={`${item.text}-${index}`}>{item.text}</Text>
+        <Text size="xs" p="xs" c="dimmed" key={`${item.text}-${index}`}>{t((item as any).text)}</Text>
       )
     } else {
       return (
@@ -60,7 +62,7 @@ export function Navbar() {
           // href={item.path}
           key={`${item.label}-${index}`}
           active={index === active}
-          label={item.label}
+          label={t((item as any).label)}
           // description={item.description}
           leftSection={item.leftSection}
           onClick={() => {
